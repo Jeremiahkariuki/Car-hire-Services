@@ -78,6 +78,55 @@ class CarAdmin(admin.ModelAdmin):
     search_fields = ('brand', 'model_name', 'license_plate')
     list_editable = ('daily_rate', 'is_featured', 'is_active')
     inlines = [MaintenanceRecordInline]
+    readonly_fields = ('image_preview',)
+
+    fieldsets = (
+        ('🚗 Vehicle Identity', {
+            'fields': (
+                ('brand', 'model_name', 'year'),
+                ('license_plate', 'category'),
+            )
+        }),
+        ('💰 Pricing & Status', {
+            'fields': (
+                ('daily_rate',),
+                ('is_active', 'is_featured'),
+            )
+        }),
+        ('⚙️ Specifications', {
+            'fields': (
+                ('transmission', 'fuel_type'),
+                ('seats', 'doors', 'luggage_capacity'),
+                ('has_air_conditioning', 'has_gps', 'has_bluetooth'),
+                ('mileage',),
+            )
+        }),
+        ('🖼️ Vehicle Images', {
+            'description': 'Upload a photo directly or paste a web image URL. Upload takes priority.',
+            'fields': (
+                'image_preview',
+                'image',
+                'image_url',
+            )
+        }),
+        ('📝 Description', {
+            'fields': ('description',),
+            'classes': ('collapse',),
+        }),
+    )
+
+    def image_preview(self, obj):
+        url = obj.photo_url
+        return format_html(
+            '<div style="margin: 8px 0;">'
+            '<img src="{}" style="max-width: 480px; max-height: 280px; object-fit: cover; '
+            'border-radius: 12px; border: 2px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />'
+            '<p style="font-size: 11px; color: #64748b; margin-top: 6px;">📸 Current vehicle image — '
+            'upload a new file below or change the URL to update it.</p>'
+            '</div>',
+            url
+        )
+    image_preview.short_description = "Current Image Preview"
 
     def thumbnail(self, obj):
         url = obj.photo_url
