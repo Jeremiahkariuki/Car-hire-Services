@@ -319,4 +319,104 @@ class Command(BaseCommand):
                 created_count += 1
 
         self.stdout.write(self.style.SUCCESS(f"Seeded {len(cars_data)} cars ({created_count} newly created)."))
+
+        # 5. Demo Customer Account
+        customer_user, cust_created = User.objects.get_or_create(
+            username="customer",
+            defaults={
+                "email": "customer@example.com",
+                "first_name": "Alex",
+                "last_name": "Rivera",
+            }
+        )
+        if cust_created:
+            customer_user.set_password("customer123")
+            customer_user.save()
+            profile = customer_user.customer_profile
+            profile.phone = "+1 (555) 345-6789"
+            profile.driver_license = "DL-ALEX-88992"
+            profile.city = "Capital City"
+            profile.save()
+            self.stdout.write(self.style.SUCCESS("Created demo customer: username=customer, password=customer123"))
+
+        # 6. Sample Booking for Customer
+        prado = Car.objects.filter(license_plate="KDA-482M").first()
+        tesla = Car.objects.filter(license_plate="EV-990-TX").first()
+        airport_loc = Location.objects.first()
+        downtown_loc = Location.objects.last()
+
+        from datetime import date, timedelta
+        if prado and airport_loc:
+            booking, b_created = Booking.objects.get_or_create(
+                booking_reference="DRV-DEMO01",
+                defaults={
+                    "user": customer_user,
+                    "car": prado,
+                    "customer_name": "Alex Rivera",
+                    "customer_email": "customer@example.com",
+                    "customer_phone": "+1 (555) 345-6789",
+                    "customer_driver_license": "DL-ALEX-88992",
+                    "pickup_location": airport_loc,
+                    "return_location": downtown_loc,
+                    "pickup_date": date.today() + timedelta(days=1),
+                    "return_date": date.today() + timedelta(days=4),
+                    "daily_rate_applied": prado.daily_rate,
+                    "total_days": 3,
+                    "total_amount": prado.daily_rate * 3,
+                    "status": "CONFIRMED",
+                    "special_requests": "Child booster seat requested.",
+                }
+            )
+            if b_created:
+                # Add sample pick-up check-out inspection
+                from rentals.models import VehicleInspection
+                VehicleInspection.objects.create(
+                    booking=booking,
+                    car=prado,
+                    inspection_type="CHECK_OUT",
+                    odometer_reading=prado.mileage,
+                    fuel_level="FULL",
+                    exterior_condition="EXCELLENT",
+                    interior_condition="CLEAN",
+                    has_spare_tire_and_jack=True,
+                    has_all_documents=True,
+                    damage_notes="No scratches or body defects found. Full tank verified.",
+                    inspected_by=User.objects.filter(is_superuser=True).first()
+                )
+                self.stdout.write(self.style.SUCCESS("Seeded sample booking and check-out inspection."))
+
+        # 7. Fleet Maintenance Records
+        from rentals.models import MaintenanceRecord
+        if prado:
+            MaintenanceRecord.objects.get_or_create(
+                car=prado,
+                service_type="OIL_CHANGE",
+                defaults={
+                    "status": "COMPLETED",
+                    "service_date": date.today() - timedelta(days=45),
+                    "odometer_at_service": 10000,
+                    "next_service_due_date": date.today() + timedelta(days=120),
+                    "next_service_due_km": 20000,
+                    "cost": Decimal("120.00"),
+                    "service_provider": "Toyota Authorized Service Center",
+                    "notes": "Full synthetic 5W-30 oil and OEM oil filter changed.",
+                }
+            )
+
+        if tesla:
+            MaintenanceRecord.objects.get_or_create(
+                car=tesla,
+                service_type="TIRE_ROTATION",
+                defaults={
+                    "status": "SCHEDULED",
+                    "service_date": date.today() - timedelta(days=5),
+                    "next_service_due_date": date.today() - timedelta(days=2),  # Overdue alert!
+                    "next_service_due_km": 9000,
+                    "cost": Decimal("65.00"),
+                    "service_provider": "Tesla Mobile Service",
+                    "notes": "Routine tire rotation and tread depth check.",
+                }
+            )
+            self.stdout.write(self.style.SUCCESS("Seeded sample maintenance records."))
+
         self.stdout.write(self.style.SUCCESS("Database seeding completed successfully!"))

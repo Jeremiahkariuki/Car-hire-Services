@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}My Dashboard & Bookings | DriveEasy{% endblock %}
+
+{% block content %}
+<div class="bg-slate-900 text-white py-12 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <span class="text-xs uppercase font-extrabold tracking-widest text-brand-400">Customer Account</span>
+            <h1 class="text-3xl font-extrabold mt-1">Hello, {{ user.first_name|default:user.username }}!</h1>
+            <p class="text-slate-400 text-xs sm:text-sm mt-1">Manage your active reservations, vehicle condition reports, and profile credentials.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="{% url 'profile_edit' %}" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition-colors">
+                Edit Profile
+            </a>
+            <a href="{% url 'car_list' %}" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md transition-all">
+                + Rent a Car
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <!-- Sidebar Profile Summary -->
+        <div class="lg:col-span-1 space-y-6">
+            <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
+                <div class="flex items-center gap-3 pb-4 border-b border-slate-100">
+                    <div class="w-12 h-12 rounded-2xl bg-brand-600 text-white font-extrabold text-lg flex items-center justify-center">
+                        {{ user.first_name|first|default:user.username|first|upper }}
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-sm">{{ user.get_full_name|default:user.username }}</h3>
+                        <p class="text-[11px] text-slate-400">{{ user.email }}</p>
+                    </div>
+                </div>
+
+                <div class="space-y-2 text-xs text-slate-600">
+                    <div>
+                        <span class="text-slate-400 block text-[10px] uppercase font-bold">Phone:</span>
+                        <span class="font-medium text-slate-800">{{ profile.phone|default:"Not specified" }}</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block text-[10px] uppercase font-bold">Driver License:</span>
+                        <span class="font-mono font-medium text-slate-800">{{ profile.driver_license|default:"Not specified" }}</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block text-[10px] uppercase font-bold">Location:</span>
+                        <span class="font-medium text-slate-800">{{ profile.city|default:"Not specified" }}</span>
+                    </div>
+                </div>
+
+                <a href="{% url 'profile_edit' %}" class="block w-full text-center py-2 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs border border-slate-200 transition-colors">
+                    Update Details
+                </a>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-3xl text-white shadow-md">
+                <span class="text-[10px] uppercase tracking-wider font-extrabold text-blue-200 block">Total Trips Booked</span>
+                <span class="text-3xl font-black mt-1 block">{{ bookings.count }}</span>
+                <p class="text-xs text-blue-100 mt-2">DriveEasy Preferred Traveler</p>
+            </div>
+        </div>
+
+        <!-- Bookings Main Column -->
+        <div class="lg:col-span-3 space-y-8">
+            <!-- Active & Upcoming Bookings -->
+            <div>
+                <h2 class="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">
+                    <span>Active & Upcoming Reservations</span>
+                    <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full">{{ active_bookings.count }}</span>
+                </h2>
+
+                <div class="space-y-4">
+                    {% for b in active_bookings %}
+                    <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-4">
+                            <img src="{{ b.car.photo_url }}" alt="{{ b.car.display_name }}" class="w-24 h-20 object-cover rounded-2xl shadow-sm border border-slate-100 flex-shrink-0">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-mono text-xs font-black text-brand-600 bg-brand-50 px-2 py-0.5 rounded-md">{{ b.booking_reference }}</span>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {% if b.status == 'CONFIRMED' %}bg-emerald-100 text-emerald-800{% elif b.status == 'ACTIVE' %}bg-blue-100 text-blue-800{% else %}bg-amber-100 text-amber-800{% endif %}">
+                                        ● {{ b.get_status_display }}
+                                    </span>
+                                </div>
+                                <h3 class="text-base font-extrabold text-slate-900 mt-1">{{ b.car.display_name }} ({{ b.car.year }})</h3>
+                                <p class="text-xs text-slate-500">
+                                    📅 {{ b.pickup_date|date:"M d" }} → {{ b.return_date|date:"M d, Y" }} ({{ b.total_days }} days)
+                                </p>
+                                <p class="text-xs text-slate-400">
+                                    Pickup: <strong class="text-slate-600">{{ b.pickup_location.name }}</strong>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full md:w-auto justify-between border-t md:border-t-0 pt-4 md:pt-0 border-slate-100">
+                            <div class="text-right sm:text-right">
+                                <span class="text-xl font-black text-brand-600">${{ b.total_amount }}</span>
+                                <span class="text-[10px] text-slate-400 font-bold block uppercase">Payable</span>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <a href="{% url 'booking_confirmation' b.booking_reference %}" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors">
+                                    Voucher
+                                </a>
+
+                                <a href="{% url 'record_inspection' b.booking_reference %}" title="Vehicle Condition Inspection" class="px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-brand-700 font-bold text-xs border border-blue-200 transition-colors flex items-center gap-1">
+                                    <span>Inspection</span>
+                                </a>
+
+                                {% if b.status == 'CONFIRMED' or b.status == 'PENDING' %}
+                                <form method="POST" action="{% url 'cancel_booking' b.booking_reference %}" onsubmit="return confirm('Cancel this reservation?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition-colors">
+                                        Cancel
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="bg-white rounded-3xl p-8 text-center border border-slate-200/80">
+                        <p class="text-xs text-slate-500 mb-4">You have no active or upcoming reservations right now.</p>
+                        <a href="{% url 'car_list' %}" class="inline-flex items-center px-5 py-2.5 rounded-xl bg-brand-600 text-white text-xs font-bold hover:bg-brand-700 transition-colors">
+                            Explore Vehicles to Book
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Past Bookings -->
+            {% if past_bookings %}
+            <div class="pt-6">
+                <h2 class="text-lg font-bold text-slate-900 mb-4">Past Rental History</h2>
+                <div class="space-y-3">
+                    {% for b in past_bookings %}
+                    <div class="bg-white rounded-2xl border border-slate-200 p-4 flex items-center justify-between gap-4 text-xs">
+                        <div class="flex items-center gap-3">
+                            <span class="font-mono text-slate-500 font-bold">{{ b.booking_reference }}</span>
+                            <span class="font-bold text-slate-900">{{ b.car.display_name }}</span>
+                            <span class="text-slate-400">{{ b.pickup_date|date:"M d, Y" }}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-0.5 rounded-full font-bold {% if b.status == 'COMPLETED' %}bg-slate-100 text-slate-700{% else %}bg-rose-50 text-rose-600{% endif %}">
+                                {{ b.get_status_display }}
+                            </span>
+                            <span class="font-bold text-slate-700">${{ b.total_amount }}</span>
+                            <a href="{% url 'booking_confirmation' b.booking_reference %}" class="text-brand-600 hover:underline font-bold">
+                                Receipt
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

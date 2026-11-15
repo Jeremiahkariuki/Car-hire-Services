@@ -2,7 +2,10 @@ from datetime import date, timedelta
 from decimal import Decimal
 from django.test import TestCase, Client
 from django.urls import reverse
-from rentals.models import Category, Location, Car, Booking
+from django.contrib.auth import get_user_model
+from rentals.models import Category, Location, Car, Booking, VehicleInspection, MaintenanceRecord, CustomerProfile
+
+User = get_user_model()
 
 
 class CarRentalSystemTests(TestCase):
@@ -26,6 +29,7 @@ class CarRentalSystemTests(TestCase):
             fuel_type="Diesel",
             seats=7,
             doors=5,
+            mileage=15000,
             is_active=True,
             is_featured=True,
         )
@@ -80,7 +84,6 @@ class CarRentalSystemTests(TestCase):
         self.assertTrue(booking.booking_reference.startswith("DRV-"))
 
     def test_booking_conflict_rejection(self):
-        # Create an existing booking
         p1 = date.today() + timedelta(days=5)
         r1 = date.today() + timedelta(days=10)
         Booking.objects.create(
@@ -99,7 +102,6 @@ class CarRentalSystemTests(TestCase):
             status='CONFIRMED'
         )
 
-        # Attempt to overlap: day 7 to day 12
         post_data = {
             'pickup_location': self.location.id,
             'return_location': self.location.id,
@@ -113,7 +115,6 @@ class CarRentalSystemTests(TestCase):
             'customer_driver_license': 'DL-22',
         }
         response = self.client.post(reverse('car_detail', args=[self.car.id]), post_data)
-        # Form should be invalid and not redirect
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "already booked for the selected dates")
 
@@ -133,7 +134,6 @@ class CarRentalSystemTests(TestCase):
             status='CONFIRMED'
         )
 
-        # Lookup
         lookup_res = self.client.post(reverse('booking_lookup'), {
             'booking_reference': booking.booking_reference,
             'email': 'alice@example.com'
@@ -141,8 +141,145 @@ class CarRentalSystemTests(TestCase):
         self.assertEqual(lookup_res.status_code, 200)
         self.assertContains(lookup_res, booking.booking_reference)
 
-        # Cancel
         cancel_res = self.client.post(reverse('cancel_booking', args=[booking.booking_reference]))
         self.assertEqual(cancel_res.status_code, 302)
         booking.refresh_from_db()
         self.assertEqual(booking.status, 'CANCELLED')
+
+    # ==========================================
+    # Customer Accounts Tests
+    # ==========================================
+    def test_customer_registration_and_login(self):
+        reg_data = {
+            'username': 'driver99',
+            'first_name': 'Carlos',
+            'last_name': 'Gomez',
+            'email': 'carlos@example.com',
+            'phone': '+1555333444',
+            'driver_license': 'DL-CARLOS-77',
+            'password': 'SecurePassword123!',
+            'password_confirm': 'SecurePassword123!',
+        }
+        response = self.client.post(reverse('register'), reg_data)
+        self.assertEqual(response.status_code, 302)
+
+        user = User.objects.get(username='driver99')
+        self.assertEqual(user.first_name, 'Carlos')
+        user.customer_profile.refresh_from_db()
+        self.assertEqual(user.customer_profile.driver_license, 'DL-CARLOS-77')
+
+        # Test dashboard access
+        dash_response = self.client.get(reverse('customer_dashboard'))
+        self.assertEqual(dash_response.status_code, 200)
+        self.assertContains(dash_response, "Carlos")
+
+    def test_authenticated_user_booking_links_to_account(self):
+        user = User.objects.create_user(
+            username='sammy',
+            email='sammy@example.com',
+            password='password123',
+            first_name='Sammy'
+        )
+        self.client.login(username='sammy', password='password123')
+
+        pickup = date.today() + timedelta(days=2)
+        dropoff = date.today() + timedelta(days=4)
+        post_data = {
+            'pickup_location': self.location.id,
+            'return_location': self.location.id,
+            'pickup_date': pickup.strftime('%Y-%m-%d'),
+            'pickup_time': '10:00 AM',
+            'return_date': dropoff.strftime('%Y-%m-%d'),
+            'return_time': '10:00 AM',
+            'customer_name': 'Sammy Traveler',
+            'customer_email': 'sammy@example.com',
+            'customer_phone': '555-8888',
+            'customer_driver_license': 'DL-SAMMY',
+        }
+        response = self.client.post(reverse('car_detail', args=[self.car.id]), post_data)
+        self.assertEqual(response.status_code, 302)
+
+        booking = Booking.objects.get(customer_email='sammy@example.com')
+        self.assertEqual(booking.user, user)
+
+    # ==========================================
+    # Vehicle Condition Inspection Tests
+    # ==========================================
+    def test_vehicle_inspection_workflow(self):
+        user = User.objects.create_user(username='inspector', password='pw')
+        self.client.login(username='inspector', password='pw')
+
+        booking = Booking.objects.create(
+            car=self.car,
+            pickup_location=self.location,
+            return_location=self.location,
+            pickup_date=date.today(),
+            return_date=date.today() + timedelta(days=3),
+            customer_name='Inspector Test',
+            customer_email='insp@example.com',
+            customer_phone='123',
+            customer_driver_license='DL-99',
+            status='CONFIRMED'
+        )
+
+        # 1. Record Check-Out Inspection
+        insp_post = {
+            'inspection_type': 'CHECK_OUT',
+            'odometer_reading': 15000,
+            'fuel_level': 'FULL',
+            'exterior_condition': 'EXCELLENT',
+            'interior_condition': 'CLEAN',
+            'has_spare_tire_and_jack': True,
+            'has_all_documents': True,
+            'damage_notes': 'Clean pickup',
+        }
+        resp = self.client.post(reverse('record_inspection', args=[booking.booking_reference]), insp_post)
+        self.assertEqual(resp.status_code, 302)
+        booking.refresh_from_db()
+        self.assertEqual(booking.status, 'ACTIVE')
+
+        # 2. Record Check-In Inspection with higher odometer reading
+        return_post = {
+            'inspection_type': 'CHECK_IN',
+            'odometer_reading': 15450,
+            'fuel_level': 'FULL',
+            'exterior_condition': 'GOOD',
+            'interior_condition': 'CLEAN',
+            'has_spare_tire_and_jack': True,
+            'has_all_documents': True,
+            'damage_notes': 'Returned in great shape',
+        }
+        resp2 = self.client.post(reverse('record_inspection', args=[booking.booking_reference]), return_post)
+        self.assertEqual(resp2.status_code, 302)
+        booking.refresh_from_db()
+        self.assertEqual(booking.status, 'COMPLETED')
+        self.car.refresh_from_db()
+        self.assertEqual(self.car.mileage, 15450)
+
+    # ==========================================
+    # Fleet Maintenance Tests
+    # ==========================================
+    def test_maintenance_overdue_detection(self):
+        # On schedule record
+        rec_good = MaintenanceRecord.objects.create(
+            car=self.car,
+            service_type='OIL_CHANGE',
+            status='SCHEDULED',
+            service_date=date.today(),
+            next_service_due_date=date.today() + timedelta(days=90),
+            next_service_due_km=25000,
+            cost=Decimal('100.00'),
+        )
+        self.assertFalse(rec_good.is_overdue)
+
+        # Overdue record
+        rec_overdue = MaintenanceRecord.objects.create(
+            car=self.car,
+            service_type='TIRE_ROTATION',
+            status='SCHEDULED',
+            service_date=date.today() - timedelta(days=10),
+            next_service_due_date=date.today() - timedelta(days=2),
+            cost=Decimal('50.00'),
+        )
+        self.assertTrue(rec_overdue.is_overdue)
+        self.assertTrue(self.car.overdue_maintenance)

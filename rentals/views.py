@@ -2,9 +2,19 @@ from datetime import datetime, date
 from decimal import Decimal
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Q
-from .models import Car, Category, Location, Booking
-from .forms import BookingForm, QuickSearchForm, BookingLookupForm
+from .models import Car, Category, Location, Booking, VehicleInspection, MaintenanceRecord, CustomerProfile
+from .forms import (
+    BookingForm,
+    QuickSearchForm,
+    BookingLookupForm,
+    CustomerRegistrationForm,
+    CustomerProfileForm,
+    VehicleInspectionForm,
+)
 
 
 def home(request):
@@ -28,7 +38,6 @@ def car_list(request):
     categories = Category.objects.all()
     locations = Location.objects.filter(is_active=True)
 
-    # Filtering parameters
     search_query = request.GET.get('q', '').strip()
     category_slug = request.GET.get('category', '').strip()
     transmission = request.GET.get('transmission', '').strip()
@@ -130,16 +139,18 @@ def car_detail(request, pk):
             pass
 
     if request.method == 'POST':
-        form = BookingForm(request.POST, car=car)
+        form = BookingForm(request.POST, car=car, user=request.user)
         if form.is_valid():
             booking = form.save(commit=False)
             booking.car = car
             booking.daily_rate_applied = car.daily_rate
+            if request.user.is_authenticated:
+                booking.user = request.user
             booking.save()
             messages.success(request, f"Your reservation is confirmed! Booking Reference: {booking.booking_reference}")
             return redirect('booking_confirmation', ref=booking.booking_reference)
     else:
-        form = BookingForm(car=car, initial=initial_data)
+        form = BookingForm(car=car, initial=initial_data, user=request.user)
 
     return render(request, 'rentals/car_detail.html', {
         'car': car,
@@ -180,14 +191,141 @@ def booking_lookup(request):
 def cancel_booking(request, ref):
     if request.method == 'POST':
         booking = get_object_or_404(Booking, booking_reference=ref)
+        # Verify ownership if user is logged in
+        if booking.user and request.user.is_authenticated and booking.user != request.user and not request.user.is_staff:
+            messages.error(request, "You are not authorized to cancel this booking.")
+            return redirect('customer_dashboard')
+
         if booking.status in ['PENDING', 'CONFIRMED']:
             booking.status = 'CANCELLED'
             booking.save()
             messages.success(request, f"Booking {booking.booking_reference} has been cancelled successfully.")
         else:
             messages.warning(request, f"Cannot cancel booking with current status: {booking.get_status_display()}")
+        
+        if request.user.is_authenticated:
+            return redirect('customer_dashboard')
         return redirect('booking_lookup')
     return redirect('home')
+
+
+# ========================================================
+# Customer User Accounts Views
+# ========================================================
+
+def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('customer_dashboard')
+
+    if request.method == 'POST':
+        form = CustomerRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, f"Welcome to DriveEasy, {user.first_name or user.username}! Your account has been created.")
+            return redirect('customer_dashboard')
+    else:
+        form = CustomerRegistrationForm()
+
+    return render(request, 'rentals/register.html', {'form': form})
+
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('customer_dashboard')
+
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            messages.success(request, f"Welcome back, {user.first_name or user.username}!")
+            next_url = request.GET.get('next')
+            if next_url:
+                return redirect(next_url)
+            return redirect('customer_dashboard')
+        else:
+            messages.error(request, "Invalid username or password.")
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'rentals/login.html', {'form': form})
+
+
+def logout_view(request):
+    logout(request)
+    messages.info(request, "You have been logged out.")
+    return redirect('home')
+
+
+@login_required
+def customer_dashboard(request):
+    profile, _ = CustomerProfile.objects.get_or_create(user=request.user)
+    bookings = request.user.bookings.all().order_by('-created_at')
+    active_bookings = bookings.filter(status__in=['CONFIRMED', 'ACTIVE', 'PENDING'])
+    past_bookings = bookings.filter(status__in=['COMPLETED', 'CANCELLED'])
+
+    return render(request, 'rentals/dashboard.html', {
+        'profile': profile,
+        'bookings': bookings,
+        'active_bookings': active_bookings,
+        'past_bookings': past_bookings,
+    })
+
+
+@login_required
+def profile_edit(request):
+    profile, _ = CustomerProfile.objects.get_or_create(user=request.user)
+    if request.method == 'POST':
+        form = CustomerProfileForm(request.POST, instance=profile, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect('customer_dashboard')
+    else:
+        form = CustomerProfileForm(instance=profile, user=request.user)
+
+    return render(request, 'rentals/profile_edit.html', {'form': form})
+
+
+# ========================================================
+# Fleet & Inspection Operations
+# ========================================================
+
+@login_required
+def record_inspection(request, booking_ref):
+    booking = get_object_or_404(Booking, booking_reference=booking_ref)
+    existing_inspections = booking.inspections.all()
+
+    if request.method == 'POST':
+        form = VehicleInspectionForm(request.POST, request.FILES)
+        if form.is_valid():
+            inspection = form.save(commit=False)
+            inspection.booking = booking
+            inspection.car = booking.car
+            inspection.inspected_by = request.user
+            inspection.save()
+
+            # If check-out was performed, can mark booking active
+            if inspection.inspection_type == 'CHECK_OUT' and booking.status == 'CONFIRMED':
+                booking.status = 'ACTIVE'
+                booking.save()
+            # If check-in was performed, can mark booking completed
+            elif inspection.inspection_type == 'CHECK_IN' and booking.status == 'ACTIVE':
+                booking.status = 'COMPLETED'
+                booking.save()
+
+            messages.success(request, f"{inspection.get_inspection_type_display()} condition report saved successfully!")
+            return redirect('record_inspection', booking_ref=booking.booking_reference)
+    else:
+        initial_data = {'odometer_reading': booking.car.mileage}
+        form = VehicleInspectionForm(initial=initial_data)
+
+    return render(request, 'rentals/record_inspection.html', {
+        'booking': booking,
+        'form': form,
+        'existing_inspections': existing_inspections,
+    })
 
 
 def about(request):

@@ -1,12 +1,32 @@
 import uuid
 from decimal import Decimal
+from datetime import date
 from django.db import models
-from django.urls import reverse
-from django.utils import timezone
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 def generate_booking_reference():
     return f"DRV-{uuid.uuid4().hex[:8].upper()}"
+
+
+class CustomerProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='customer_profile')
+    phone = models.CharField(max_length=30, blank=True)
+    driver_license = models.CharField(max_length=50, blank=True)
+    address = models.CharField(max_length=200, blank=True)
+    city = models.CharField(max_length=60, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Profile of {self.user.username}"
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_customer_profile(sender, instance, created, **kwargs):
+    if created:
+        CustomerProfile.objects.get_or_create(user=instance)
 
 
 class Category(models.Model):
@@ -106,6 +126,17 @@ class Car(models.Model):
             conflicts = conflicts.exclude(id=exclude_booking_id)
         return not conflicts.exists()
 
+    @property
+    def overdue_maintenance(self):
+        today = date.today()
+        records = self.maintenance_records.filter(status__in=['SCHEDULED', 'IN_PROGRESS'])
+        for rec in records:
+            if rec.next_service_due_date and rec.next_service_due_date <= today:
+                return True
+            if rec.next_service_due_km and self.mileage >= rec.next_service_due_km:
+                return True
+        return False
+
 
 class Booking(models.Model):
     STATUS_CHOICES = [
@@ -121,6 +152,13 @@ class Booking(models.Model):
         unique=True,
         default=generate_booking_reference,
         editable=False
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='bookings'
     )
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='bookings')
     customer_name = models.CharField(max_length=120)
@@ -165,3 +203,111 @@ class Booking(models.Model):
         if self.daily_rate_applied and self.total_days:
             self.total_amount = Decimal(self.daily_rate_applied) * Decimal(self.total_days)
         super().save(*args, **kwargs)
+
+
+class VehicleInspection(models.Model):
+    INSPECTION_TYPES = [
+        ('CHECK_OUT', 'Pick-up / Check-Out'),
+        ('CHECK_IN', 'Return / Check-In'),
+    ]
+
+    FUEL_LEVELS = [
+        ('EMPTY', 'Empty'),
+        ('QUARTER', '1/4 Tank'),
+        ('HALF', '1/2 Tank'),
+        ('THREE_QUARTERS', '3/4 Tank'),
+        ('FULL', 'Full Tank'),
+    ]
+
+    EXTERIOR_CONDITIONS = [
+        ('EXCELLENT', 'Excellent - No Scratches/Dents'),
+        ('GOOD', 'Good - Minor Marks'),
+        ('SCRATCHES', 'Noticeable Scratches/Scuffs'),
+        ('DAMAGED', 'Visible Dents or Body Damage'),
+    ]
+
+    INTERIOR_CONDITIONS = [
+        ('CLEAN', 'Clean & Sanitized'),
+        ('NEEDS_CLEANING', 'Light Dirt / Needs Vacuum'),
+        ('DIRTY', 'Stained Upholstery / Deep Clean Required'),
+    ]
+
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='inspections')
+    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='inspections')
+    inspection_type = models.CharField(max_length=20, choices=INSPECTION_TYPES)
+    odometer_reading = models.PositiveIntegerField(help_text="Odometer reading in km at inspection time")
+    fuel_level = models.CharField(max_length=20, choices=FUEL_LEVELS, default='FULL')
+    exterior_condition = models.CharField(max_length=20, choices=EXTERIOR_CONDITIONS, default='EXCELLENT')
+    interior_condition = models.CharField(max_length=20, choices=INTERIOR_CONDITIONS, default='CLEAN')
+    has_spare_tire_and_jack = models.BooleanField(default=True, help_text="Spare wheel, jack and wrench present")
+    has_all_documents = models.BooleanField(default=True, help_text="Vehicle registration and insurance papers present")
+    damage_notes = models.TextField(blank=True, help_text="Record any scratches, chips, stains or observations")
+    damage_photo = models.ImageField(upload_to='inspections/', blank=True, null=True)
+    inspected_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='conducted_inspections'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.get_inspection_type_display()} - {self.car.license_plate} ({self.created_at.strftime('%Y-%m-%d %H:%M')})"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Automatically update vehicle's current odometer if inspection reading is higher
+        if self.odometer_reading and self.odometer_reading > self.car.mileage:
+            self.car.mileage = self.odometer_reading
+            self.car.save(update_fields=['mileage'])
+
+
+class MaintenanceRecord(models.Model):
+    SERVICE_TYPES = [
+        ('OIL_CHANGE', 'Engine Oil & Filter Change'),
+        ('TIRE_ROTATION', 'Tire Rotation & Wheel Alignment'),
+        ('BRAKE_SERVICE', 'Brake Pad / Disc Service'),
+        ('INSPECTION', 'Scheduled Periodic Safety Inspection'),
+        ('BATTERY', 'Battery Test / Replacement'),
+        ('AIR_FILTER', 'Cabin & Engine Air Filters'),
+        ('REPAIR', 'Mechanical / Electrical / Body Repair'),
+    ]
+
+    STATUS_CHOICES = [
+        ('SCHEDULED', 'Scheduled'),
+        ('IN_PROGRESS', 'In Progress'),
+        ('COMPLETED', 'Completed'),
+        ('CANCELLED', 'Cancelled'),
+    ]
+
+    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='maintenance_records')
+    service_type = models.CharField(max_length=30, choices=SERVICE_TYPES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='SCHEDULED')
+    service_date = models.DateField(help_text="Date service was performed or is scheduled for")
+    odometer_at_service = models.PositiveIntegerField(blank=True, null=True, help_text="Odometer km at service time")
+    next_service_due_date = models.DateField(blank=True, null=True, help_text="Expiry or next scheduled service date")
+    next_service_due_km = models.PositiveIntegerField(blank=True, null=True, help_text="Odometer km when next service is due")
+    cost = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'), help_text="Service cost in USD")
+    service_provider = models.CharField(max_length=120, blank=True, help_text="Workshop, dealer or mechanic name")
+    notes = models.TextField(blank=True, help_text="Details of parts replaced, invoice numbers, or work done")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-service_date', '-created_at']
+
+    def __str__(self):
+        return f"{self.get_service_type_display()} - {self.car.license_plate} ({self.service_date})"
+
+    @property
+    def is_overdue(self):
+        today = date.today()
+        if self.status in ['SCHEDULED', 'IN_PROGRESS']:
+            if self.next_service_due_date and self.next_service_due_date <= today:
+                return True
+            if self.next_service_due_km and self.car.mileage >= self.next_service_due_km:
+                return True
+        return False
