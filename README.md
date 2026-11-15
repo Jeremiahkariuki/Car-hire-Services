@@ -1,4 +1,4 @@
-# RidKari - Car Hire & Rental System
+# RideKari - Car Hire & Rental System
 
 A modern full-stack Car Hire and Fleet Management System built with **Python 3**, **Django 5**, **SQLite**, and **Tailwind CSS**.
 

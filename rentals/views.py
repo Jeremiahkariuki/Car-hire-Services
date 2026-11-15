@@ -222,7 +222,7 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, f"Welcome to RidKari, {user.first_name or user.username}! Your account has been created.")
+            messages.success(request, f"Welcome to RideKari, {user.first_name or user.username}! Your account has been created.")
             return redirect('customer_dashboard')
     else:
         form = CustomerRegistrationForm()
