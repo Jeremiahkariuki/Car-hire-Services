@@ -232,6 +232,8 @@ def register_view(request):
 
 def login_view(request):
     if request.user.is_authenticated:
+        if request.user.is_staff:
+            return redirect('/admin/')
         return redirect('customer_dashboard')
 
     if request.method == 'POST':
@@ -243,6 +245,8 @@ def login_view(request):
             next_url = request.GET.get('next')
             if next_url:
                 return redirect(next_url)
+            if user.is_staff:
+                return redirect('/admin/')
             return redirect('customer_dashboard')
         else:
             messages.error(request, "Invalid username or password.")
