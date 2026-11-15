@@ -14,3 +14,10 @@
     </a>
 </div>
 {% endblock %}
+
+{% block userlinks %}
+<a href="/" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 8px; background: rgba(37, 99, 235, 0.2); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; font-weight: 700; font-size: 11px; text-decoration: none; margin-right: 12px;">
+    <span>🌐</span> Live Site ↗
+</a>
+{{ block.super }}
+{% endblock %}

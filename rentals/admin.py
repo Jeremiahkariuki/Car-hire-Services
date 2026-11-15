@@ -280,3 +280,35 @@ class MaintenanceRecordAdmin(admin.ModelAdmin):
             return format_html('<span style="color: #ef4444; font-weight: 700;">⚠️ Overdue</span>')
         return format_html('<span style="color: #10b981;">✓ On Schedule</span>')
     overdue_indicator.short_description = "Schedule"
+
+
+# ========================================================
+# Custom Dashboard Index Context
+# ========================================================
+original_admin_index = admin.site.index
+
+def custom_admin_index(request, extra_context=None):
+    extra = extra_context or {}
+    total_cars = Car.objects.count()
+    available_cars = Car.objects.filter(is_available=True).count()
+    total_bookings = Booking.objects.count()
+    active_bookings = Booking.objects.filter(status__in=['CONFIRMED', 'ACTIVE', 'PENDING']).count()
+    total_inspections = VehicleInspection.objects.count()
+    maintenance_records = MaintenanceRecord.objects.all()
+    overdue_maintenance = sum(1 for m in maintenance_records if m.is_overdue)
+    recent_bookings = Booking.objects.select_related('car', 'pickup_location').order_by('-created_at')[:6]
+    recent_cars = Car.objects.select_related('category').order_by('-created_at')[:4]
+
+    extra.update({
+        'total_cars': total_cars,
+        'available_cars': available_cars,
+        'total_bookings': total_bookings,
+        'active_bookings': active_bookings,
+        'total_inspections': total_inspections,
+        'overdue_maintenance': overdue_maintenance,
+        'recent_bookings': recent_bookings,
+        'recent_cars': recent_cars,
+    })
+    return original_admin_index(request, extra_context=extra)
+
+admin.site.index = custom_admin_index

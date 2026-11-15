@@ -1,40 +1,810 @@
-{% extends "admin/index.html" %}
+{% extends "admin/base_site.html" %}
 {% load i18n static %}
 
-{% block content %}
-<!-- Fleet showcase banner -->
-<div style="
-    background: linear-gradient(90deg, #0f172a 0%, #1e3a8a 100%);
-    border-radius: 20px;
-    padding: 28px 32px;
-    margin-bottom: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 8px 32px rgba(15, 23, 42, 0.4);
-">
-    <div style="position: relative; z-index: 1;">
-        <span style="font-size: 11px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: #60a5fa;">Fleet Control Center</span>
-        <h2 style="font-size: 26px; font-weight: 900; color: white; margin: 6px 0 4px; letter-spacing: -0.5px;">
-            RideKari Admin Dashboard
-        </h2>
-        <p style="font-size: 13px; color: #94a3b8; margin: 0; max-width: 440px;">
-            Manage your entire vehicle fleet, customer reservations, inspection reports, and service schedules from one place.
-        </p>
-    </div>
-    <div style="display: flex; gap: 10px; flex-shrink: 0;">
-        <img src="https://images.unsplash.com/photo-1594502184342-2e12f877aa73?auto=format&fit=crop&w=200&q=70"
-             style="width: 110px; height: 72px; object-fit: cover; border-radius: 12px; opacity: 0.8; border: 2px solid rgba(255,255,255,0.1);" alt="SUV">
-        <img src="https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=200&q=70"
-             style="width: 110px; height: 72px; object-fit: cover; border-radius: 12px; opacity: 0.8; border: 2px solid rgba(255,255,255,0.1);" alt="Electric">
-        <img src="https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&w=200&q=70"
-             style="width: 110px; height: 72px; object-fit: cover; border-radius: 12px; opacity: 0.8; border: 2px solid rgba(255,255,255,0.1);" alt="Sports">
-    </div>
-</div>
-
-<!-- Original admin app panels continue -->
+{% block extrastyle %}
 {{ block.super }}
+<style>
+    /* Modern Dashboard Custom Grid */
+    .rk-dashboard {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 8px 0 40px;
+        color: #f1f5f9;
+    }
+
+    /* Welcome Banner */
+    .rk-hero-card {
+        background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.22), transparent 50%),
+                    linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f172a 100%);
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        border-radius: 20px;
+        padding: 28px 32px;
+        margin-bottom: 24px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+    }
+
+    .rk-hero-left h1 {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        color: #ffffff;
+        margin: 0 0 6px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .rk-hero-left p {
+        color: #94a3b8;
+        font-size: 13px;
+        margin: 0;
+        max-width: 580px;
+        line-height: 1.5;
+    }
+
+    .rk-hero-badge {
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #60a5fa;
+        background: rgba(37, 99, 235, 0.2);
+        border: 1px solid rgba(96, 165, 250, 0.3);
+        padding: 4px 10px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-bottom: 8px;
+    }
+
+    .rk-quick-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .rk-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .rk-btn-primary {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .rk-btn-primary:hover {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+    }
+
+    .rk-btn-outline {
+        background: rgba(30, 41, 59, 0.8);
+        color: #e2e8f0 !important;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .rk-btn-outline:hover {
+        background: rgba(51, 65, 85, 0.9);
+        color: #ffffff !important;
+        border-color: rgba(255, 255, 255, 0.25);
+        transform: translateY(-1px);
+    }
+
+    /* KPI Metrics Cards */
+    .rk-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .rk-stat-card {
+        background: #1e293b;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 20px 24px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s, border-color 0.2s;
+    }
+    .rk-stat-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(59, 130, 246, 0.35);
+    }
+
+    .rk-stat-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--stat-accent, #3b82f6);
+    }
+
+    .rk-stat-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .rk-stat-title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #94a3b8;
+    }
+
+    .rk-stat-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .rk-stat-number {
+        font-size: 30px;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1;
+        margin-bottom: 6px;
+        letter-spacing: -1px;
+    }
+
+    .rk-stat-desc {
+        font-size: 12px;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .rk-stat-desc strong {
+        color: #10b981;
+    }
+
+    /* Modules Hub (3 Columns) */
+    .rk-hub-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .rk-hub-card {
+        background: #1e293b;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 22px 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .rk-hub-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-bottom: 16px;
+        margin-bottom: 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .rk-hub-header-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(79, 70, 229, 0.2));
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+
+    .rk-hub-header h3 {
+        font-size: 15px;
+        font-weight: 800;
+        color: #ffffff;
+        margin: 0;
+        letter-spacing: -0.2px;
+    }
+
+    .rk-hub-header p {
+        font-size: 11px;
+        color: #94a3b8;
+        margin: 2px 0 0;
+    }
+
+    .rk-hub-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .rk-hub-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        border-radius: 12px;
+        background: rgba(15, 23, 42, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.15s ease;
+    }
+    .rk-hub-item:hover {
+        background: rgba(30, 41, 59, 0.9);
+        border-color: rgba(59, 130, 246, 0.3);
+        transform: translateX(2px);
+    }
+
+    .rk-hub-item-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .rk-hub-item-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #e2e8f0;
+        text-decoration: none !important;
+    }
+    .rk-hub-item-title:hover {
+        color: #60a5fa !important;
+    }
+
+    .rk-hub-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .rk-badge-btn {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 9px;
+        border-radius: 8px;
+        text-decoration: none !important;
+        transition: all 0.15s;
+    }
+
+    .rk-badge-add {
+        background: rgba(37, 99, 235, 0.2);
+        color: #60a5fa !important;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .rk-badge-add:hover {
+        background: #2563eb;
+        color: #ffffff !important;
+    }
+
+    .rk-badge-view {
+        background: rgba(255, 255, 255, 0.05);
+        color: #94a3b8 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .rk-badge-view:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff !important;
+    }
+
+    /* Split Section: Recent Bookings & Fleet Preview */
+    .rk-dual-grid {
+        display: grid;
+        grid-template-columns: 2fr 1.2fr;
+        gap: 20px;
+    }
+    @media (max-width: 1024px) {
+        .rk-dual-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .rk-table-card {
+        background: #1e293b;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .rk-card-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+    }
+
+    .rk-card-title-row h3 {
+        font-size: 16px;
+        font-weight: 800;
+        color: #ffffff;
+        margin: 0;
+        letter-spacing: -0.3px;
+    }
+
+    .rk-card-title-row a {
+        font-size: 12px;
+        font-weight: 700;
+        color: #60a5fa;
+        text-decoration: none;
+    }
+    .rk-card-title-row a:hover {
+        text-decoration: underline;
+    }
+
+    .rk-custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+
+    .rk-custom-table th {
+        text-align: left;
+        padding: 10px 12px;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #64748b;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .rk-custom-table td {
+        padding: 12px;
+        color: #cbd5e1;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        vertical-align: middle;
+    }
+
+    .rk-custom-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .rk-status-pill {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .rk-status-CONFIRMED, .rk-status-ACTIVE {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .rk-status-PENDING {
+        background: rgba(245, 158, 11, 0.2);
+        color: #fbbf24;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .rk-status-COMPLETED {
+        background: rgba(59, 130, 246, 0.2);
+        color: #60a5fa;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .rk-status-CANCELLED {
+        background: rgba(239, 68, 68, 0.2);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* Fleet Mini Grid */
+    .rk-fleet-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .rk-car-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 12px;
+        border-radius: 14px;
+        background: rgba(15, 23, 42, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        text-decoration: none !important;
+        transition: all 0.2s;
+    }
+    .rk-car-card:hover {
+        background: rgba(30, 41, 59, 0.9);
+        border-color: rgba(59, 130, 246, 0.35);
+        transform: translateY(-1px);
+    }
+
+    .rk-car-thumb {
+        width: 72px;
+        height: 50px;
+        border-radius: 10px;
+        object-fit: cover;
+        background: #0f172a;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        flex-shrink: 0;
+    }
+
+    .rk-car-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .rk-car-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .rk-car-meta {
+        font-size: 11px;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 2px;
+    }
+
+    .rk-car-rate {
+        font-size: 14px;
+        font-weight: 800;
+        color: #60a5fa;
+        text-align: right;
+    }
+    .rk-car-rate span {
+        font-size: 10px;
+        font-weight: 500;
+        color: #64748b;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="rk-dashboard">
+
+    <!-- 1. Hero / Header Banner -->
+    <div class="rk-hero-card">
+        <div class="rk-hero-left">
+            <span class="rk-hero-badge">Fleet Operations Active</span>
+            <h1>
+                RideKari Command Center
+            </h1>
+            <p>
+                Manage your vehicle fleet, reservations, vehicle inspections, service schedules, and customer accounts in real-time.
+            </p>
+        </div>
+        <div class="rk-quick-actions">
+            <a href="{% url 'admin:rentals_car_add' %}" class="rk-btn rk-btn-primary">
+                <span>+</span> Add Vehicle
+            </a>
+            <a href="{% url 'admin:rentals_booking_add' %}" class="rk-btn rk-btn-primary">
+                <span>+</span> New Booking
+            </a>
+            <a href="{% url 'admin:rentals_vehicleinspection_add' %}" class="rk-btn rk-btn-outline">
+                <span>📋</span> Log Inspection
+            </a>
+            <a href="{% url 'admin:rentals_maintenancerecord_add' %}" class="rk-btn rk-btn-outline">
+                <span>🛠️</span> Service
+            </a>
+            <a href="/" target="_blank" class="rk-btn rk-btn-outline">
+                <span>🌐</span> Live Site ↗
+            </a>
+        </div>
+    </div>
+
+    <!-- 2. KPI Metrics Stats Grid -->
+    <div class="rk-stats-grid">
+        <div class="rk-stat-card" style="--stat-accent: #3b82f6;">
+            <div class="rk-stat-top">
+                <span class="rk-stat-title">Fleet Vehicles</span>
+                <div class="rk-stat-icon">🚗</div>
+            </div>
+            <div class="rk-stat-number">{{ total_cars|default:"0" }}</div>
+            <div class="rk-stat-desc">
+                <strong>{{ available_cars|default:"0" }} available</strong> ready for hire
+            </div>
+        </div>
+
+        <div class="rk-stat-card" style="--stat-accent: #10b981;">
+            <div class="rk-stat-top">
+                <span class="rk-stat-title">Active Bookings</span>
+                <div class="rk-stat-icon">📅</div>
+            </div>
+            <div class="rk-stat-number">{{ active_bookings|default:"0" }}</div>
+            <div class="rk-stat-desc">
+                {{ total_bookings|default:"0" }} all-time reservations
+            </div>
+        </div>
+
+        <div class="rk-stat-card" style="--stat-accent: #8b5cf6;">
+            <div class="rk-stat-top">
+                <span class="rk-stat-title">Condition Reports</span>
+                <div class="rk-stat-icon">📋</div>
+            </div>
+            <div class="rk-stat-number">{{ total_inspections|default:"0" }}</div>
+            <div class="rk-stat-desc">
+                Check-in / Check-out inspections
+            </div>
+        </div>
+
+        <div class="rk-stat-card" style="--stat-accent: {% if overdue_maintenance > 0 %}#ef4444{% else %}#10b981{% endif %};">
+            <div class="rk-stat-top">
+                <span class="rk-stat-title">Maintenance</span>
+                <div class="rk-stat-icon">🛠️</div>
+            </div>
+            <div class="rk-stat-number" style="{% if overdue_maintenance > 0 %}color: #f87171;{% endif %}">
+                {{ overdue_maintenance|default:"0" }}
+            </div>
+            <div class="rk-stat-desc">
+                {% if overdue_maintenance > 0 %}
+                <span style="color: #f87171; font-weight: 700;">Service alert required</span>
+                {% else %}
+                <strong>All vehicles</strong> on schedule
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Operations Hub Grid (Organized cleanly) -->
+    <div class="rk-hub-grid">
+        <!-- Fleet Column -->
+        <div class="rk-hub-card">
+            <div class="rk-hub-header">
+                <div class="rk-hub-header-icon">🚗</div>
+                <div>
+                    <h3>Fleet & Inventory</h3>
+                    <p>Vehicles, categories, and depot hubs</p>
+                </div>
+            </div>
+            <div class="rk-hub-list">
+                <div class="rk-hub-item">
+                    <div class="rk-hub-item-left">
+                        <span style="font-size: 16px;">🚘</span>
+                        <a href="{% url 'admin:rentals_car_changelist' %}" class="rk-hub-item-title">Vehicles (Cars)</a>
+                    </div>
+                    <div class="rk-hub-actions">
+                        <a href="{% url 'admin:rentals_car_add' %}" class="rk-badge-btn rk-badge-add">+ Add</a>
+                        <a href="{% url 'admin:rentals_car_changelist' %}" class="rk-badge-btn rk-badge-view">View</a>
+                    </div>
+                </div>
+
+                <div class="rk-hub-item">
+                    <div class="rk-hub-item-left">
+                        <span style="font-size: 16px;">🏷️</span>
+                        <a href="{% url 'admin:rentals_category_changelist' %}" class="rk-hub-item-title">Vehicle Categories</a>
+                    </div>
+                    <div class="rk-hub-actions">
+                        <a href="{% url 'admin:rentals_category_add' %}" class="rk-badge-btn rk-badge-add">+ Add</a>
+                        <a href="{% url 'admin:rentals_category_changelist' %}" class="rk-badge-btn rk-badge-view">View</a>
+                    </div>
+                </div>
+
+                <div class="rk-hub-item">
+                    <div class="rk-hub-item-left">
+                        <span style="font-size: 16px;">📍</span>
+                        <a href="{% url 'admin:rentals_location_changelist' %}" class="rk-hub-item-title">Locations & Depots</a>
+                    </div>
+                    <div class="rk-hub-actions">
+                        <a href="{% url 'admin:rentals_location_add' %}" class="rk-badge-btn rk-badge-add">+ Add</a>
+                        <a href="{% url 'admin:rentals_location_changelist' %}" class="rk-badge-btn rk-badge-view">View</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Operations & Bookings Column -->
+        <div class="rk-hub-card">
+            <div class="rk-hub-header">
+                <div class="rk-hub-header-icon">📋</div>
+                <div>
+                    <h3>Operations & Rentals</h3>
+                    <p>Bookings, digital inspections, & service</p>
+                </div>
+            </div>
+            <div class="rk-hub-list">
+                <div class="rk-hub-item">
+                    <div class="rk-hub-item-left">
+                        <span style="font-size: 16px;">📅</span>
+                        <a href="{% url 'admin:rentals_booking_changelist' %}" class="rk-hub-item-title">Reservations / Bookings</a>
+                    </div>
+                    <div class="rk-hub-actions">
+                        <a href="{% url 'admin:rentals_booking_add' %}" class="rk-badge-btn rk-badge-add">+ Add</a>
+                        <a href="{% url 'admin:rentals_booking_changelist' %}" class="rk-badge-btn rk-badge-view">View</a>
+                    </div>
+                </div>
+
+                <div class="rk-hub-item">
+                    <div class="rk-hub-item-left">
+                        <span style="font-size: 16px;">🔍</span>
+                        <a href="{% url 'admin:rentals_vehicleinspection_changelist' %}" class="rk-hub-item-title">Vehicle Inspections</a>
+                    </div>
+                    <div class="rk-hub-actions">
+                        <a href="{% url 'admin:rentals_vehicleinspection_add' %}" class="rk-badge-btn rk-badge-add">+ Add</a>
+                        <a href="{% url 'admin:rentals_vehicleinspection_changelist' %}" class="rk-badge-btn rk-badge-view">View</a>
+                    </div>
+                </div>
+
+                <div class="rk-hub-item">
+                    <div class="rk-hub-item-left">
+                        <span style="font-size: 16px;">⚙️</span>
+                        <a href="{% url 'admin:rentals_maintenancerecord_changelist' %}" class="rk-hub-item-title">Maintenance Records</a>
+                    </div>
+                    <div class="rk-hub-actions">
+                        <a href="{% url 'admin:rentals_maintenancerecord_add' %}" class="rk-badge-btn rk-badge-add">+ Add</a>
+                        <a href="{% url 'admin:rentals_maintenancerecord_changelist' %}" class="rk-badge-btn rk-badge-view">View</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accounts & Security Column -->
+        <div class="rk-hub-card">
+            <div class="rk-hub-header">
+                <div class="rk-hub-header-icon">👥</div>
+                <div>
+                    <h3>Accounts & Security</h3>
+                    <p>Customers, staff members, & roles</p>
+                </div>
+            </div>
+            <div class="rk-hub-list">
+                <div class="rk-hub-item">
+                    <div class="rk-hub-item-left">
+                        <span style="font-size: 16px;">👤</span>
+                        <a href="{% url 'admin:auth_user_changelist' %}" class="rk-hub-item-title">Users & Staff</a>
+                    </div>
+                    <div class="rk-hub-actions">
+                        <a href="{% url 'admin:auth_user_add' %}" class="rk-badge-btn rk-badge-add">+ Add</a>
+                        <a href="{% url 'admin:auth_user_changelist' %}" class="rk-badge-btn rk-badge-view">View</a>
+                    </div>
+                </div>
+
+                <div class="rk-hub-item">
+                    <div class="rk-hub-item-left">
+                        <span style="font-size: 16px;">🛡️</span>
+                        <a href="{% url 'admin:auth_group_changelist' %}" class="rk-hub-item-title">Permission Groups</a>
+                    </div>
+                    <div class="rk-hub-actions">
+                        <a href="{% url 'admin:auth_group_add' %}" class="rk-badge-btn rk-badge-add">+ Add</a>
+                        <a href="{% url 'admin:auth_group_changelist' %}" class="rk-badge-btn rk-badge-view">View</a>
+                    </div>
+                </div>
+
+                <div class="rk-hub-item">
+                    <div class="rk-hub-item-left">
+                        <span style="font-size: 16px;">🪪</span>
+                        <a href="{% url 'admin:auth_user_changelist' %}" class="rk-hub-item-title">Customer Licenses & ID</a>
+                    </div>
+                    <div class="rk-hub-actions">
+                        <a href="{% url 'admin:auth_user_changelist' %}" class="rk-badge-btn rk-badge-view">Manage</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Recent Bookings Table & Live Fleet Cards -->
+    <div class="rk-dual-grid">
+        <!-- Recent Bookings -->
+        <div class="rk-table-card">
+            <div class="rk-card-title-row">
+                <h3>Latest Reservations</h3>
+                <a href="{% url 'admin:rentals_booking_changelist' %}">View All Bookings →</a>
+            </div>
+
+            {% if recent_bookings %}
+            <div style="overflow-x: auto;">
+                <table class="rk-custom-table">
+                    <thead>
+                        <tr>
+                            <th>Reference</th>
+                            <th>Customer</th>
+                            <th>Vehicle</th>
+                            <th>Dates</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in recent_bookings %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'admin:rentals_booking_change' b.pk %}" style="color: #60a5fa; font-weight: 800; text-decoration: none;">
+                                    {{ b.booking_reference }}
+                                </a>
+                            </td>
+                            <td>
+                                <div style="font-weight: 700; color: #ffffff;">{{ b.customer_name }}</div>
+                                <div style="font-size: 10px; color: #64748b;">{{ b.customer_email }}</div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 600;">{{ b.car.brand }} {{ b.car.model_name }}</div>
+                                <div style="font-size: 10px; color: #64748b;">{{ b.car.license_plate }}</div>
+                            </td>
+                            <td>
+                                <div>{{ b.start_date|date:"M d" }} - {{ b.end_date|date:"M d, Y" }}</div>
+                                <div style="font-size: 10px; color: #64748b;">{{ b.pickup_location.city }}</div>
+                            </td>
+                            <td>
+                                <span class="rk-status-pill rk-status-{{ b.status }}">{{ b.get_status_display }}</span>
+                            </td>
+                            <td>
+                                <strong style="color: #ffffff; font-weight: 800;">${{ b.total_price }}</strong>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 36px 20px; color: #64748b;">
+                <p style="margin: 0; font-size: 13px;">No reservations recorded yet.</p>
+                <a href="{% url 'admin:rentals_booking_add' %}" style="display: inline-block; margin-top: 10px; color: #60a5fa; font-size: 12px; font-weight: 700;">+ Create First Reservation</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Fleet Quick Preview -->
+        <div class="rk-table-card">
+            <div class="rk-card-title-row">
+                <h3>Fleet Spotlight</h3>
+                <a href="{% url 'admin:rentals_car_changelist' %}">All Cars →</a>
+            </div>
+
+            {% if recent_cars %}
+            <div class="rk-fleet-grid">
+                {% for car in recent_cars %}
+                <a href="{% url 'admin:rentals_car_change' car.pk %}" class="rk-car-card">
+                    <img src="{{ car.image_url }}" alt="{{ car.display_name }}" class="rk-car-thumb">
+                    <div class="rk-car-info">
+                        <h4 class="rk-car-title">{{ car.brand }} {{ car.model_name }}</h4>
+                        <div class="rk-car-meta">
+                            <span>{{ car.year }}</span>
+                            <span>•</span>
+                            <span>{{ car.get_transmission_display }}</span>
+                            <span>•</span>
+                            {% if car.is_available %}
+                            <span style="color: #34d399; font-weight: 700;">Available</span>
+                            {% else %}
+                            <span style="color: #f87171; font-weight: 700;">Rented</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="rk-car-rate">
+                        ${{ car.price_per_day|floatformat:0 }}
+                        <span>/day</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 36px 20px; color: #64748b;">
+                <p style="margin: 0; font-size: 13px;">No vehicles in fleet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
 {% endblock %}
