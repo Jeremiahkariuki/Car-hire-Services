@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Booking Confirmed - {{ booking.booking_reference }} | DriveEasy{% endblock %}
+{% block title %}Booking Confirmed - {{ booking.booking_reference }} | RidKari{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -32,7 +32,7 @@
                     DE
                 </div>
                 <div>
-                    <h2 class="text-lg font-black text-slate-900">DriveEasy Rental Voucher</h2>
+                    <h2 class="text-lg font-black text-slate-900">RidKari Rental Voucher</h2>
                     <p class="text-xs text-slate-400">Issued on {{ booking.created_at|date:"M d, Y - H:i" }}</p>
                 </div>
             </div>

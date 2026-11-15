@@ -4,8 +4,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import Category, Location, Car, Booking, CustomerProfile, VehicleInspection, MaintenanceRecord
 
-admin.site.site_header = "DriveEasy Car Hire Admin"
-admin.site.site_title = "DriveEasy Portal"
+admin.site.site_header = "RidKari Car Hire Admin"
+admin.site.site_title = "RidKari Portal"
 admin.site.index_title = "Fleet & Reservation Management"
 
 
