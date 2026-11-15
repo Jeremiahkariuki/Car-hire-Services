@@ -776,23 +776,23 @@
             <div class="rk-fleet-grid">
                 {% for car in recent_cars %}
                 <a href="{% url 'admin:rentals_car_change' car.pk %}" class="rk-car-card">
-                    <img src="{{ car.image_url }}" alt="{{ car.display_name }}" class="rk-car-thumb">
+                    <img src="{{ car.photo_url|default:car.image_url }}" alt="{{ car.display_name }}" class="rk-car-thumb">
                     <div class="rk-car-info">
                         <h4 class="rk-car-title">{{ car.brand }} {{ car.model_name }}</h4>
                         <div class="rk-car-meta">
                             <span>{{ car.year }}</span>
                             <span>•</span>
-                            <span>{{ car.get_transmission_display }}</span>
+                            <span>{{ car.transmission }}</span>
                             <span>•</span>
-                            {% if car.is_available %}
-                            <span style="color: #34d399; font-weight: 700;">Available</span>
+                            {% if car.is_active %}
+                            <span style="color: #34d399; font-weight: 700;">Active</span>
                             {% else %}
-                            <span style="color: #f87171; font-weight: 700;">Rented</span>
+                            <span style="color: #f87171; font-weight: 700;">Inactive</span>
                             {% endif %}
                         </div>
                     </div>
                     <div class="rk-car-rate">
-                        ${{ car.price_per_day|floatformat:0 }}
+                        ${{ car.daily_rate|floatformat:0 }}
                         <span>/day</span>
                     </div>
                 </a>

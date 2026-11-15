@@ -290,7 +290,7 @@ original_admin_index = admin.site.index
 def custom_admin_index(request, extra_context=None):
     extra = extra_context or {}
     total_cars = Car.objects.count()
-    available_cars = Car.objects.filter(is_available=True).count()
+    available_cars = Car.objects.filter(is_active=True).count()
     total_bookings = Booking.objects.count()
     active_bookings = Booking.objects.filter(status__in=['CONFIRMED', 'ACTIVE', 'PENDING']).count()
     total_inspections = VehicleInspection.objects.count()
