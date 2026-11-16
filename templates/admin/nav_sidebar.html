@@ -1,0 +1,166 @@
+{% load i18n static %}
+<button class="sticky toggle-nav-sidebar" id="toggle-nav-sidebar" aria-label="{% translate 'Toggle navigation' %}" title="Collapse / Expand Sidebar"></button>
+<nav class="sticky" id="nav-sidebar" aria-label="{% translate 'Sidebar' %}">
+  
+  <!-- Sidebar Search -->
+  <div class="rk-sidebar-search-box">
+    <div class="rk-search-input-wrapper">
+      <svg class="rk-search-icon" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+      </svg>
+      <input type="search" id="nav-filter"
+             placeholder="Search navigation…"
+             aria-label="{% translate 'Filter navigation items' %}"
+             autocomplete="off">
+    </div>
+  </div>
+
+  <!-- Custom Structured Sidebar Menu -->
+  <div class="rk-sidebar-menu">
+
+    <!-- Dashboard Main Link -->
+    <div class="rk-nav-section">
+      <div class="rk-nav-group-items">
+        <a href="{% url 'admin:index' %}" class="rk-nav-link {% if request.path == '/admin/' %}active{% endif %}">
+          <span class="rk-nav-icon">📊</span>
+          <span class="rk-nav-text">Dashboard</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Fleet Section -->
+    <div class="rk-nav-section" data-section="fleet">
+      <div class="rk-nav-heading">Fleet Management</div>
+      <div class="rk-nav-group-items">
+        <div class="rk-nav-item-row {% if '/admin/rentals/car/' in request.path %}active{% endif %}">
+          <a href="{% url 'admin:rentals_car_changelist' %}" class="rk-nav-link">
+            <span class="rk-nav-icon">🚗</span>
+            <span class="rk-nav-text">Vehicles & Fleet</span>
+          </a>
+          <a href="{% url 'admin:rentals_car_add' %}" class="rk-nav-add-btn" title="Add New Car">+</a>
+        </div>
+
+        <div class="rk-nav-item-row {% if '/admin/rentals/category/' in request.path %}active{% endif %}">
+          <a href="{% url 'admin:rentals_category_changelist' %}" class="rk-nav-link">
+            <span class="rk-nav-icon">🏷️</span>
+            <span class="rk-nav-text">Categories</span>
+          </a>
+          <a href="{% url 'admin:rentals_category_add' %}" class="rk-nav-add-btn" title="Add Category">+</a>
+        </div>
+
+        <div class="rk-nav-item-row {% if '/admin/rentals/location/' in request.path %}active{% endif %}">
+          <a href="{% url 'admin:rentals_location_changelist' %}" class="rk-nav-link">
+            <span class="rk-nav-icon">📍</span>
+            <span class="rk-nav-text">Locations & Hubs</span>
+          </a>
+          <a href="{% url 'admin:rentals_location_add' %}" class="rk-nav-add-btn" title="Add Location">+</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Operations Section -->
+    <div class="rk-nav-section" data-section="operations">
+      <div class="rk-nav-heading">Operations & Trips</div>
+      <div class="rk-nav-group-items">
+        <div class="rk-nav-item-row {% if '/admin/rentals/booking/' in request.path %}active{% endif %}">
+          <a href="{% url 'admin:rentals_booking_changelist' %}" class="rk-nav-link">
+            <span class="rk-nav-icon">📅</span>
+            <span class="rk-nav-text">Reservations</span>
+          </a>
+          <a href="{% url 'admin:rentals_booking_add' %}" class="rk-nav-add-btn" title="Create Reservation">+</a>
+        </div>
+
+        <div class="rk-nav-item-row {% if '/admin/rentals/vehicleinspection/' in request.path %}active{% endif %}">
+          <a href="{% url 'admin:rentals_vehicleinspection_changelist' %}" class="rk-nav-link">
+            <span class="rk-nav-icon">🔍</span>
+            <span class="rk-nav-text">Condition Reports</span>
+          </a>
+          <a href="{% url 'admin:rentals_vehicleinspection_add' %}" class="rk-nav-add-btn" title="Log Inspection">+</a>
+        </div>
+
+        <div class="rk-nav-item-row {% if '/admin/rentals/maintenancerecord/' in request.path %}active{% endif %}">
+          <a href="{% url 'admin:rentals_maintenancerecord_changelist' %}" class="rk-nav-link">
+            <span class="rk-nav-icon">⚙️</span>
+            <span class="rk-nav-text">Maintenance Records</span>
+          </a>
+          <a href="{% url 'admin:rentals_maintenancerecord_add' %}" class="rk-nav-add-btn" title="Schedule Service">+</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accounts Section -->
+    <div class="rk-nav-section" data-section="accounts">
+      <div class="rk-nav-heading">Accounts & Security</div>
+      <div class="rk-nav-group-items">
+        <div class="rk-nav-item-row {% if '/admin/auth/user/' in request.path %}active{% endif %}">
+          <a href="{% url 'admin:auth_user_changelist' %}" class="rk-nav-link">
+            <span class="rk-nav-icon">👤</span>
+            <span class="rk-nav-text">Users & Staff</span>
+          </a>
+          <a href="{% url 'admin:auth_user_add' %}" class="rk-nav-add-btn" title="Add User">+</a>
+        </div>
+
+        <div class="rk-nav-item-row {% if '/admin/auth/group/' in request.path %}active{% endif %}">
+          <a href="{% url 'admin:auth_group_changelist' %}" class="rk-nav-link">
+            <span class="rk-nav-icon">🛡️</span>
+            <span class="rk-nav-text">Permission Groups</span>
+          </a>
+          <a href="{% url 'admin:auth_group_add' %}" class="rk-nav-add-btn" title="Add Group">+</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Shortcuts -->
+    <div class="rk-nav-section">
+      <div class="rk-nav-heading">Live Portal</div>
+      <div class="rk-nav-group-items">
+        <div class="rk-nav-item-row">
+          <a href="/" target="_blank" class="rk-nav-link">
+            <span class="rk-nav-icon">🌐</span>
+            <span class="rk-nav-text">Customer Website ↗</span>
+          </a>
+        </div>
+        <div class="rk-nav-item-row">
+          <a href="{% url 'admin:password_change' %}" class="rk-nav-link">
+            <span class="rk-nav-icon">🔑</span>
+            <span class="rk-nav-text">Change Password</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+<script>
+  // Instant real-time sidebar filter
+  document.addEventListener('DOMContentLoaded', function() {
+    var searchInput = document.getElementById('nav-filter');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', function() {
+      var query = this.value.toLowerCase().trim();
+      var rows = document.querySelectorAll('.rk-nav-item-row');
+      var sections = document.querySelectorAll('.rk-nav-section');
+
+      rows.forEach(function(row) {
+        var text = row.textContent.toLowerCase();
+        if (!query || text.indexOf(query) !== -1) {
+          row.style.display = 'flex';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      sections.forEach(function(section) {
+        var visibleRows = section.querySelectorAll('.rk-nav-item-row[style*="display: flex"], .rk-nav-item-row:not([style*="display: none"])');
+        // If searching and no visible rows in this section, hide section heading
+        if (query && visibleRows.length === 0) {
+          section.style.display = 'none';
+        } else {
+          section.style.display = 'block';
+        }
+      });
+    });
+  });
+</script>
