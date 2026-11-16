@@ -753,7 +753,7 @@
                                 <span class="rk-status-pill rk-status-{{ b.status }}">{{ b.get_status_display }}</span>
                             </td>
                             <td>
-                                <strong style="color: #ffffff; font-weight: 800;">${{ b.total_price }}</strong>
+                                <strong style="color: #ffffff; font-weight: 800;">KSh {{ b.total_price }}</strong>
                             </td>
                         </tr>
                         {% endfor %}
@@ -795,7 +795,7 @@
                         </div>
                     </div>
                     <div class="rk-car-rate">
-                        ${{ car.daily_rate|floatformat:0 }}
+                        KSh {{ car.daily_rate|floatformat:0 }}
                         <span>/day</span>
                     </div>
                 </a>

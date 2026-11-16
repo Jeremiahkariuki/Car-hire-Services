@@ -183,7 +183,7 @@ class BookingAdmin(admin.ModelAdmin):
     car_info.short_description = "Rented Car"
 
     def total_amount_formatted(self, obj):
-        return f"${obj.total_amount:.2f}"
+        return f"KSh {obj.total_amount:,.2f}"
     total_amount_formatted.short_description = "Total"
 
     def status_badge(self, obj):
@@ -257,7 +257,7 @@ class MaintenanceRecordAdmin(admin.ModelAdmin):
     search_fields = ('car__brand', 'car__model_name', 'car__license_plate', 'service_provider', 'notes')
 
     def cost_formatted(self, obj):
-        return f"${obj.cost:.2f}"
+        return f"KSh {obj.cost:,.2f}"
     cost_formatted.short_description = "Cost"
 
     def status_badge(self, obj):

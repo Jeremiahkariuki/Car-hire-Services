@@ -46,7 +46,7 @@
                         <p class="text-xs text-slate-500 mt-1">Year {{ car.year }} • License Plate: {{ car.license_plate }}</p>
                     </div>
                     <div class="sm:text-right">
-                        <span class="text-3xl font-black text-brand-600">${{ car.daily_rate|floatformat:0 }}</span>
+                        <span class="text-3xl font-black text-brand-600">KSh {{ car.daily_rate|floatformat:0 }}</span>
                         <span class="text-xs text-slate-400 font-semibold block">per day (unlimited km)</span>
                     </div>
                 </div>
@@ -137,7 +137,7 @@
                     <a href="{% url 'car_detail' sim.id %}" class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all group flex flex-col">
                         <img src="{{ sim.photo_url }}" alt="{{ sim.display_name }}" class="w-full h-24 object-cover rounded-xl mb-2">
                         <span class="font-bold text-xs text-slate-900 group-hover:text-brand-600">{{ sim.display_name }}</span>
-                        <span class="text-[11px] text-brand-600 font-extrabold mt-1">${{ sim.daily_rate|floatformat:0 }}/day</span>
+                        <span class="text-[11px] text-brand-600 font-extrabold mt-1">KSh {{ sim.daily_rate|floatformat:0 }}/day</span>
                     </a>
                     {% endfor %}
                 </div>
@@ -154,7 +154,7 @@
                         <h2 class="text-xl font-black text-slate-900">Rental Details</h2>
                     </div>
                     <div class="text-right">
-                        <span id="rateDisplay" data-rate="{{ car.daily_rate }}" class="text-2xl font-black text-brand-600">${{ car.daily_rate|floatformat:0 }}</span>
+                        <span id="rateDisplay" data-rate="{{ car.daily_rate }}" class="text-2xl font-black text-brand-600">KSh {{ car.daily_rate|floatformat:0 }}</span>
                         <span class="text-[10px] text-slate-400 font-bold block uppercase">per day</span>
                     </div>
                 </div>
@@ -259,7 +259,7 @@
                     <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-2 mt-4 text-xs font-medium text-slate-600">
                         <div class="flex justify-between">
                             <span>Daily Rate:</span>
-                            <span class="font-bold text-slate-800">${{ car.daily_rate|floatformat:2 }}</span>
+                            <span class="font-bold text-slate-800">KSh {{ car.daily_rate|floatformat:2 }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span>Total Rental Period:</span>
@@ -267,11 +267,11 @@
                         </div>
                         <div class="flex justify-between">
                             <span>Insurance & Taxes:</span>
-                            <span class="font-bold text-emerald-600">Included ($0.00)</span>
+                            <span class="font-bold text-emerald-600">Included (KSh 0)</span>
                         </div>
                         <div class="pt-2 border-t border-slate-200 flex justify-between text-sm font-extrabold text-slate-900">
                             <span>Estimated Total:</span>
-                            <span id="calcTotal" class="text-lg font-black text-brand-600">${{ car.daily_rate|floatformat:2 }}</span>
+                            <span id="calcTotal" class="text-lg font-black text-brand-600">KSh {{ car.daily_rate|floatformat:2 }}</span>
                         </div>
                     </div>
 
@@ -309,10 +309,10 @@
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             const total = (diffDays * rate).toFixed(2);
             daysLabel.textContent = diffDays + (diffDays === 1 ? ' Day' : ' Days');
-            totalLabel.textContent = '$' + total;
+            totalLabel.textContent = 'KSh ' + total;
         } else {
             daysLabel.textContent = '1 Day';
-            totalLabel.textContent = '$' + rate.toFixed(2);
+            totalLabel.textContent = 'KSh ' + rate.toFixed(2);
         }
     }
 
