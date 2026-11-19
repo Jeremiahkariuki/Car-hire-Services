@@ -39,6 +39,28 @@ class CarRentalSystemTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Toyota Prado")
 
+    def test_newly_added_vehicle_appears_on_homepage(self):
+        new_car = Car.objects.create(
+            brand="Subaru",
+            model_name="Outback",
+            year=2024,
+            category=self.category,
+            license_plate="SUB-999",
+            daily_rate=Decimal("120.00"),
+            transmission="Automatic",
+            fuel_type="Petrol",
+            seats=5,
+            doors=5,
+            mileage=5000,
+            is_active=True,
+            is_featured=False,
+        )
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Subaru Outback")
+        featured_cars = list(response.context['featured_cars'])
+        self.assertEqual(featured_cars[0].id, new_car.id)
+
     def test_car_list_page_and_filtering(self):
         response = self.client.get(reverse('car_list'))
         self.assertEqual(response.status_code, 200)

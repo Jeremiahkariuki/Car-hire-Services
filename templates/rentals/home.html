@@ -111,10 +111,10 @@
     <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10">
         <div>
             <span class="text-xs font-extrabold uppercase tracking-widest text-brand-600">Hand-Picked Selection</span>
-            <h2 class="text-3xl font-extrabold text-slate-900 mt-1">Featured Vehicles</h2>
+            <h2 class="text-3xl font-extrabold text-slate-900 mt-1">Featured &amp; Available Vehicles</h2>
         </div>
         <a href="{% url 'car_list' %}" class="inline-flex items-center gap-1.5 text-sm font-bold text-brand-600 hover:text-brand-700 mt-2 sm:mt-0">
-            <span>Browse Full Fleet ({{ featured_cars|length }}+)</span>
+            <span>Browse Full Fleet ({{ total_cars_count|default:featured_cars|length }}+)</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </a>
     </div>

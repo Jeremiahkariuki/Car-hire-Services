@@ -18,15 +18,16 @@ from .forms import (
 
 
 def home(request):
-    featured_cars = Car.objects.filter(is_active=True, is_featured=True)[:6]
-    if not featured_cars.exists():
-        featured_cars = Car.objects.filter(is_active=True)[:6]
+    # Active fleet ordered newest first so any newly added vehicle is immediately visible on the landing page
+    featured_cars = Car.objects.filter(is_active=True).order_by('-created_at', '-id')[:12]
+    total_cars_count = Car.objects.filter(is_active=True).count()
     categories = Category.objects.all()
     locations = Location.objects.filter(is_active=True)
     search_form = QuickSearchForm()
-    
+
     return render(request, 'rentals/home.html', {
         'featured_cars': featured_cars,
+        'total_cars_count': total_cars_count,
         'categories': categories,
         'locations': locations,
         'search_form': search_form,
