@@ -16,6 +16,30 @@ class CarAdminForm(forms.ModelForm):
             'image': DragDropImageWidget(),
         }
 
+    def clean(self):
+        cleaned_data = super().clean()
+        image = cleaned_data.get('image')
+        # If no image was received via request.FILES (e.g. browser drag/drop DataTransfer restriction),
+        # retrieve the base64 backup submitted via image_b64
+        if not image:
+            b64_data = self.data.get('image_b64', '').strip()
+            if b64_data and ';base64,' in b64_data:
+                import base64
+                import uuid
+                from django.core.files.base import ContentFile
+                try:
+                    format_part, imgstr = b64_data.split(';base64,', 1)
+                    ext = 'jpg'
+                    if 'image/' in format_part:
+                        sub = format_part.split('image/')[-1].split(';')[0]
+                        if sub in ('png', 'jpeg', 'jpg', 'webp', 'gif'):
+                            ext = 'jpg' if sub == 'jpeg' else sub
+                    filename = f"car_{uuid.uuid4().hex[:10]}.{ext}"
+                    cleaned_data['image'] = ContentFile(base64.b64decode(imgstr), name=filename)
+                except Exception:
+                    pass
+        return cleaned_data
+
 admin.site.site_header = "RideKari Car Hire Admin"
 admin.site.site_title = "RideKari Portal"
 admin.site.index_title = "Fleet & Reservation Management"

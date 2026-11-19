@@ -47,13 +47,14 @@ class DragDropImageWidget(ClearableFileInput):
                 <input type="file" name="{name}" id="{widget_id}"
                        accept="image/*" class="rk-dnd-input">
               </div>
+              <input type="hidden" name="{name}_b64" id="{widget_id}_b64" value="">
               <div class="rk-dnd-preview-wrap" id="rk-dnd-preview-{widget_id}" style="display:none;">
                 <img class="rk-dnd-preview-img" id="rk-dnd-pimg-{widget_id}" src="" alt="Preview">
                 <div class="rk-dnd-preview-info">
                   <span class="rk-dnd-preview-name" id="rk-dnd-pname-{widget_id}"></span>
                   <span class="rk-dnd-preview-size" id="rk-dnd-psize-{widget_id}"></span>
                   <button type="button" class="rk-dnd-remove-btn"
-                          onclick="rkDndClear('{widget_id}')">✕ Remove</button>
+                          onclick="rkDndClear('{widget_id}')">✕ Remove / Change</button>
                 </div>
               </div>
             </div>

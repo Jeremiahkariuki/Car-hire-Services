@@ -20,6 +20,10 @@
       var previewName = document.getElementById('rk-dnd-pname-'   + widgetId);
       var previewSize = document.getElementById('rk-dnd-psize-'   + widgetId);
       var zone        = document.getElementById('rk-dnd-zone-'    + widgetId);
+      var b64Input    = document.getElementById(widgetId + '_b64');
+      if (b64Input) {
+        b64Input.value = e.target.result;
+      }
       if (!previewWrap) return;
       previewImg.src       = e.target.result;
       previewName.textContent = file.name;
@@ -37,16 +41,18 @@
       dt.items.add(file);
       input.files = dt.files;
     } catch (e) {
-      /* Safari fallback — file already on input via drag */
+      /* Fallback: base64 input guarantees submission even if DataTransfer throws */
     }
   }
 
   /* ── Global clear function (called from onclick in widget HTML) ── */
   window.rkDndClear = function (widgetId) {
     var input       = document.getElementById(widgetId);
+    var b64Input    = document.getElementById(widgetId + '_b64');
     var previewWrap = document.getElementById('rk-dnd-preview-' + widgetId);
     var zone        = document.getElementById('rk-dnd-zone-'    + widgetId);
     if (input)       { input.value = ''; }
+    if (b64Input)    { b64Input.value = ''; }
     if (previewWrap) { previewWrap.style.display = 'none'; }
     if (zone)        { zone.style.display = 'flex'; }
   };
