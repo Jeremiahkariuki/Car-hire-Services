@@ -190,10 +190,14 @@ class CarRentalSystemTests(TestCase):
         user.customer_profile.refresh_from_db()
         self.assertEqual(user.customer_profile.driver_license, 'DL-CARLOS-77')
 
-        # Test dashboard access
+        # Test dashboard and client portal access
         dash_response = self.client.get(reverse('customer_dashboard'))
         self.assertEqual(dash_response.status_code, 200)
         self.assertContains(dash_response, "Carlos")
+
+        portal_response = self.client.get(reverse('client_portal'))
+        self.assertEqual(portal_response.status_code, 200)
+        self.assertContains(portal_response, "Client Account #")
 
     def test_authenticated_user_booking_links_to_account(self):
         user = User.objects.create_user(

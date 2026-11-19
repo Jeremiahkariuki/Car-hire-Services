@@ -270,11 +270,25 @@ def customer_dashboard(request):
     active_bookings = bookings.filter(status__in=['CONFIRMED', 'ACTIVE', 'PENDING'])
     past_bookings = bookings.filter(status__in=['COMPLETED', 'CANCELLED'])
 
+    # SaaS client metrics
+    total_spent = sum(
+        (b.total_amount for b in bookings.filter(status__in=['CONFIRMED', 'ACTIVE', 'COMPLETED'])),
+        Decimal('0.00')
+    )
+    inspections = VehicleInspection.objects.filter(booking__user=request.user).order_by('-created_at')
+    active_trip = active_bookings.first()
+    quick_fleet = Car.objects.filter(is_active=True).order_by('-created_at')[:4]
+
     return render(request, 'rentals/dashboard.html', {
         'profile': profile,
         'bookings': bookings,
         'active_bookings': active_bookings,
         'past_bookings': past_bookings,
+        'active_trip': active_trip,
+        'total_spent': total_spent,
+        'inspections_count': inspections.count(),
+        'inspections': inspections[:5],
+        'quick_fleet': quick_fleet,
     })
 
 

@@ -11,6 +11,7 @@ urlpatterns = [
     path('about/', views.about, name='about'),
 
     # Customer Accounts
+    path('portal/', views.customer_dashboard, name='client_portal'),
     path('accounts/register/', views.register_view, name='register'),
     path('accounts/login/', views.login_view, name='login'),
     path('accounts/logout/', views.logout_view, name='logout'),

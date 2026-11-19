@@ -23,6 +23,20 @@
             <p class="mt-4 text-base sm:text-lg text-slate-300">
                 Choose from our modern, fully-insured fleet of sedans, luxury SUVs, and eco-friendly electric vehicles. Best rates guaranteed.
             </p>
+
+            {% if user.is_authenticated %}
+            <!-- Signed-in Client SaaS Banner -->
+            <div class="mt-6 inline-flex flex-wrap items-center justify-center gap-3 p-2.5 px-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-xl text-left">
+                <span class="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-black text-sm flex-shrink-0 shadow-md">✓</span>
+                <div>
+                    <span class="text-[11px] text-blue-200 block">Active Session: <strong>{{ user.get_full_name|default:user.username }}</strong></span>
+                    <span class="text-xs font-extrabold text-white">Your dedicated Client Command Center is ready.</span>
+                </div>
+                <a href="{% url 'client_portal' %}" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-400 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1">
+                    <span>Open My Client Portal →</span>
+                </a>
+            </div>
+            {% endif %}
         </div>
 
         <!-- Search Bar Widget -->
@@ -278,6 +292,101 @@
                     <div class="text-lg font-black text-slate-900">4.9 / 5.0</div>
                     <div class="text-xs text-slate-500 font-medium">Rated by 12,000+ travelers</div>
                 </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dedicated SaaS Client Portal Showcase -->
+<section class="bg-gradient-to-b from-slate-900 to-slate-950 text-white py-20 border-t border-slate-800 relative overflow-hidden">
+    <div class="absolute -top-32 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-widest bg-blue-500/20 text-blue-300 border border-blue-400/30 mb-4">
+                💼 SaaS Client Platform
+            </span>
+            <h2 class="text-3xl sm:text-4xl font-black text-white">
+                A Dedicated Command Center For Every Client
+            </h2>
+            <p class="text-slate-300 text-sm sm:text-base mt-3">
+                Experience car hire engineered like modern software. Registered clients get their own dedicated landing page to manage trips, condition audits, and receipts in real time.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <!-- Feature 1 -->
+            <div class="bg-slate-800/60 p-8 rounded-3xl border border-slate-700/80 shadow-lg hover:border-blue-500/40 transition-all flex flex-col justify-between">
+                <div>
+                    <div class="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-2xl font-bold mb-5">
+                        ⚡
+                    </div>
+                    <h3 class="text-lg font-extrabold text-white mb-2">1-Click Reservations</h3>
+                    <p class="text-slate-300 text-xs leading-relaxed">
+                        Pre-verified driver credentials let you select, confirm, and voucher your vehicle in under 30 seconds with no redundant paperwork.
+                    </p>
+                </div>
+                <div class="mt-6 pt-4 border-t border-slate-700/60 flex items-center text-xs text-blue-300 font-bold">
+                    <span>Instant Digital Vouchers →</span>
+                </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="bg-slate-800/60 p-8 rounded-3xl border border-slate-700/80 shadow-lg hover:border-blue-500/40 transition-all flex flex-col justify-between">
+                <div>
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl font-bold mb-5">
+                        🔍
+                    </div>
+                    <h3 class="text-lg font-extrabold text-white mb-2">Digital Condition Reports</h3>
+                    <p class="text-slate-300 text-xs leading-relaxed">
+                        Complete check-in and check-out vehicle condition logs with photo uploads and odometer readings directly from your mobile phone.
+                    </p>
+                </div>
+                <div class="mt-6 pt-4 border-t border-slate-700/60 flex items-center text-xs text-emerald-300 font-bold">
+                    <span>100% Deposit Protection →</span>
+                </div>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="bg-slate-800/60 p-8 rounded-3xl border border-slate-700/80 shadow-lg hover:border-blue-500/40 transition-all flex flex-col justify-between">
+                <div>
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl font-bold mb-5">
+                        💰
+                    </div>
+                    <h3 class="text-lg font-extrabold text-white mb-2">Transparent KSh Billing</h3>
+                    <p class="text-slate-300 text-xs leading-relaxed">
+                        Clear itemized invoices in Kenyan Shillings (KSh). Download historical receipts anytime for personal travel or corporate expense reporting.
+                    </p>
+                </div>
+                <div class="mt-6 pt-4 border-t border-slate-700/60 flex items-center text-xs text-amber-300 font-bold">
+                    <span>Zero Hidden Fees Guaranteed →</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Client Portal Preview Card / CTA -->
+        <div class="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 rounded-3xl p-8 sm:p-10 border border-blue-500/30 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
+            <div class="space-y-1 text-center md:text-left">
+                <div class="flex items-center justify-center md:justify-start gap-2 text-xs font-extrabold uppercase tracking-wider text-blue-400">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Self-Service Client Command Center</span>
+                </div>
+                <h3 class="text-2xl font-extrabold text-white">Already have reservations or an account?</h3>
+                <p class="text-slate-300 text-xs sm:text-sm">Log in to view your live vehicle vouchers, update inspections, or book your next trip in 1 click.</p>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-3 flex-shrink-0">
+                {% if user.is_authenticated %}
+                <a href="{% url 'client_portal' %}" class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-sm shadow-lg shadow-blue-600/30 transition-all">
+                    Open My Client Portal →
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}" class="px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-sm shadow-lg shadow-blue-600/30 transition-all">
+                    Client Portal Login →
+                </a>
+                <a href="{% url 'register' %}" class="px-5 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-extrabold text-sm border border-slate-700 transition-all">
+                    Register Client Account
+                </a>
+                {% endif %}
             </div>
         </div>
     </div>
