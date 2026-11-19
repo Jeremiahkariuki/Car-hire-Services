@@ -1,0 +1,77 @@
+{% extends "admin/base_site.html" %}
+{% load i18n l10n admin_urls static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    {{ media }}
+    <script src="{% static 'admin/js/cancel.js' %}" async></script>
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} delete-confirmation delete-selected-confirmation{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+&rsaquo; {% translate 'Delete multiple objects' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="rk-delete-page-wrap">
+  <div class="rk-delete-card">
+    <div class="rk-delete-card-header">
+      <div class="rk-delete-icon-badge">⚠️</div>
+      <div>
+        <h1 class="rk-delete-title">Bulk Deletion Confirmation</h1>
+        <p class="rk-delete-sub">You are about to permanently delete multiple records from the database.</p>
+      </div>
+    </div>
+
+    {% if perms_lacking %}
+      <div class="rk-delete-alert rk-delete-alert-danger">
+        <p>{% blocktranslate %}Deleting the selected {{ objects_name }} would result in deleting related objects, but your account doesn't have permission to delete the following types of objects:{% endblocktranslate %}</p>
+        <ul class="rk-delete-tree">{{ perms_lacking|unordered_list }}</ul>
+      </div>
+    {% elif protected %}
+      <div class="rk-delete-alert rk-delete-alert-warning">
+        <p>{% blocktranslate %}Deleting the selected {{ objects_name }} would require deleting the following protected related objects:{% endblocktranslate %}</p>
+        <ul class="rk-delete-tree">{{ protected|unordered_list }}</ul>
+      </div>
+    {% else %}
+      <div class="rk-delete-content">
+        <p class="rk-delete-msg">
+          Are you sure you want to delete the <strong class="rk-delete-highlight">{{ queryset.count }} selected {{ objects_name }}</strong>?
+          All of the selected items and their associated records will be permanently removed.
+        </p>
+
+        {% if deletable_objects %}
+          <div class="rk-cascade-box">
+            <div class="rk-cascade-title">Objects and dependencies to be permanently removed:</div>
+            {% for deletable_object in deletable_objects %}
+              <ul class="rk-delete-tree">{{ deletable_object|unordered_list }}</ul>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <form method="post" class="rk-delete-form">{% csrf_token %}
+          {% for obj in queryset %}
+            <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}">
+          {% endfor %}
+          <input type="hidden" name="action" value="delete_selected">
+          <input type="hidden" name="post" value="yes">
+          <div class="rk-delete-actions">
+            <button type="submit" class="rk-btn-confirm-delete">
+              🗑️ Yes, Delete All {{ queryset.count }} Records
+            </button>
+            <a href="{% url opts|admin_urlname:'changelist' %}" class="rk-btn-cancel-delete">
+              No, Take Me Back
+            </a>
+          </div>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

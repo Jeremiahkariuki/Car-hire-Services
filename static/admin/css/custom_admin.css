@@ -850,5 +850,462 @@ input[type=file] {
     }
 }
 
+/* ========================================================
+   Changelist Modern Header & Action Toolbar
+   ======================================================== */
+.rk-view-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 24px 28px;
+    background: linear-gradient(135deg, #131c2e, #1a263d);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.rk-view-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #60a5fa;
+    background: rgba(37, 99, 235, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+}
+
+.rk-view-title {
+    font-size: 26px !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    letter-spacing: -0.5px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.rk-view-subtitle {
+    font-size: 13px;
+    color: #94a3b8;
+    margin: 6px 0 0;
+}
+
+.rk-object-tools {
+    display: flex !important;
+    gap: 10px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.rk-object-tools li {
+    list-style: none !important;
+}
+
+.rk-object-tools a,
+.object-tools a.addlink {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    color: #ffffff !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    padding: 10px 20px !important;
+    border-radius: 12px !important;
+    text-decoration: none !important;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.rk-object-tools a:hover,
+.object-tools a.addlink:hover {
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5) !important;
+}
+
+/* ========================================================
+   Modern Search Toolbar
+   ======================================================== */
+.rk-search-toolbar {
+    margin-bottom: 20px !important;
+}
+
+.rk-search-box-form {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    background: #162032;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 14px 18px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.rk-search-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 280px;
+}
+
+.rk-search-mag {
+    font-size: 16px;
+    opacity: 0.7;
+}
+
+.rk-search-inner #searchbar {
+    flex: 1;
+    background: #0d1322 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 10px !important;
+    padding: 9px 14px !important;
+    font-size: 13px !important;
+    color: #ffffff !important;
+}
+
+.rk-search-inner #searchbar:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+.rk-search-btn {
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 9px 18px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.rk-search-btn:hover {
+    background: #3b82f6;
+}
+
+.rk-search-reset-btn {
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.rk-search-reset-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.rk-search-stats {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.rk-search-stat-count {
+    font-weight: 700;
+    color: #cbd5e1;
+}
+
+.rk-search-showall {
+    color: #60a5fa;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* ========================================================
+   Action Toolbar & Direct Bulk Delete
+   ======================================================== */
+.rk-actions-bar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 14px !important;
+    background: #162032 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 14px !important;
+    padding: 12px 18px !important;
+    margin-bottom: 16px !important;
+}
+
+.rk-actions-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.rk-selection-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #0d1322;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #93c5fd;
+}
+
+.rk-selection-dot {
+    width: 8px;
+    height: 8px;
+    background: #3b82f6;
+    border-radius: 50%;
+}
+
+.rk-bulk-del-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(239, 68, 68, 0.16);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: #f87171;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 7px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+}
+
+.rk-bulk-del-btn:hover {
+    background: #ef4444;
+    color: #ffffff;
+    border-color: #ef4444;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    transform: translateY(-1px);
+}
+
+.rk-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rk-action-dropdown-group select {
+    background: #0d1322 !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border-radius: 8px !important;
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+}
+
+.rk-action-apply-btn {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    padding: 6px 14px !important;
+    border-radius: 8px !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+/* ========================================================
+   Table Row Action Buttons (Edit / Delete)
+   ======================================================== */
+.rk-row-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.rk-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 8px;
+    text-decoration: none !important;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rk-btn-edit {
+    background: rgba(59, 130, 246, 0.14);
+    color: #93c5fd;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.rk-btn-edit:hover {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+}
+
+.rk-btn-delete {
+    background: rgba(239, 68, 68, 0.14);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.rk-btn-delete:hover {
+    background: #ef4444;
+    color: #ffffff;
+    border-color: #ef4444;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+/* ========================================================
+   Executive Delete Confirmation Card
+   ======================================================== */
+.rk-delete-page-wrap {
+    max-width: 680px;
+    margin: 40px auto;
+    padding: 0 16px;
+}
+
+.rk-delete-card {
+    background: #131c2e;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.rk-delete-card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+}
+
+.rk-delete-icon-badge {
+    font-size: 32px;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+}
+
+.rk-delete-title {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    margin: 0 !important;
+}
+
+.rk-delete-sub {
+    font-size: 13px;
+    color: #94a3b8;
+    margin: 4px 0 0;
+}
+
+.rk-delete-msg {
+    font-size: 15px;
+    color: #e2e8f0;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.rk-delete-highlight {
+    color: #f87171;
+}
+
+.rk-cascade-box {
+    background: #0d1322;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+}
+
+.rk-cascade-title {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #94a3b8;
+    margin-bottom: 10px;
+}
+
+.rk-delete-tree {
+    list-style: square;
+    padding-left: 20px;
+    margin: 0;
+    font-size: 13px;
+    color: #cbd5e1;
+    line-height: 1.8;
+}
+
+.rk-delete-tree a {
+    color: #60a5fa;
+    text-decoration: none;
+}
+
+.rk-delete-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 24px;
+}
+
+.rk-btn-confirm-delete {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 800;
+    padding: 12px 24px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.rk-btn-confirm-delete:hover {
+    background: linear-gradient(135deg, #f87171, #ef4444);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+}
+
+.rk-btn-cancel-delete {
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 12px 20px;
+    border-radius: 12px;
+    text-decoration: none !important;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+}
+
+.rk-btn-cancel-delete:hover {
+    background: #334155;
+    color: #ffffff;
+}
+
 /* Mobile sidebar JS enhancements */
 /* (injected via base_site.html script block) */

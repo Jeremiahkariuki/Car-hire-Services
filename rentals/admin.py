@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+from django.urls import reverse
 from django.utils.html import format_html
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -106,10 +107,10 @@ class CarAdmin(admin.ModelAdmin):
         'mileage_formatted',
         'daily_rate',
         'transmission',
-        'fuel_type',
         'service_status_badge',
         'is_featured',
         'is_active',
+        'row_actions',
     )
     list_filter = ('category', 'transmission', 'fuel_type', 'is_featured', 'is_active', 'year')
     search_fields = ('brand', 'model_name', 'license_plate')
@@ -186,6 +187,19 @@ class CarAdmin(admin.ModelAdmin):
         )
     service_status_badge.short_description = "Health"
 
+    def row_actions(self, obj):
+        change_url = reverse('admin:rentals_car_change', args=[obj.pk])
+        delete_url = reverse('admin:rentals_car_delete', args=[obj.pk])
+        return format_html(
+            '<div class="rk-row-actions">'
+            '  <a href="{}" class="rk-btn rk-btn-edit" title="Edit Vehicle">✏️ Edit</a>'
+            '  <a href="{}" class="rk-btn rk-btn-delete" title="Delete Vehicle">🗑️ Delete</a>'
+            '</div>',
+            change_url,
+            delete_url,
+        )
+    row_actions.short_description = "Actions"
+
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
@@ -201,6 +215,7 @@ class BookingAdmin(admin.ModelAdmin):
         'status_badge',
         'inspection_summary',
         'created_at',
+        'row_actions',
     )
     list_filter = ('status', 'pickup_date', 'return_date', 'pickup_location')
     search_fields = ('booking_reference', 'customer_name', 'customer_email', 'customer_phone', 'customer_driver_license')
@@ -247,6 +262,19 @@ class BookingAdmin(admin.ModelAdmin):
             return format_html('<span style="color: #d97706; font-weight: 600;">Out Done (Awaiting In)</span>')
         return format_html('<span style="color: #9ca3af;">Pending Inspection</span>')
     inspection_summary.short_description = "Inspections"
+
+    def row_actions(self, obj):
+        change_url = reverse('admin:rentals_booking_change', args=[obj.pk])
+        delete_url = reverse('admin:rentals_booking_delete', args=[obj.pk])
+        return format_html(
+            '<div class="rk-row-actions">'
+            '  <a href="{}" class="rk-btn rk-btn-edit" title="Edit Booking">✏️ Edit</a>'
+            '  <a href="{}" class="rk-btn rk-btn-delete" title="Delete Booking">🗑️ Delete</a>'
+            '</div>',
+            change_url,
+            delete_url,
+        )
+    row_actions.short_description = "Actions"
 
 
 @admin.register(VehicleInspection)

@@ -1,0 +1,65 @@
+{% load i18n %}
+<div class="actions rk-actions-bar">
+  <div class="rk-actions-left">
+    <div class="rk-selection-pill">
+      <span class="rk-selection-dot"></span>
+      <span class="action-counter" data-actions-icnt="{{ cl.result_list|length }}">{{ selection_note }}</span>
+    </div>
+    
+    <!-- Direct Bulk Delete Button -->
+    <button type="button" class="rk-bulk-del-btn" id="rk-bulk-delete-trigger" title="Delete selected records">
+      🗑️ Delete Selected
+    </button>
+  </div>
+
+  <div class="rk-actions-right">
+    {% block actions-form %}
+      <div class="rk-action-dropdown-group">
+        {% for field in action_form %}
+          {% if field.label %}<label class="rk-action-label">{{ field.label }}:</label>{% endif %}
+          {{ field }}
+        {% endfor %}
+      </div>
+    {% endblock %}
+    {% block actions-submit %}
+      <button type="submit" class="button rk-action-apply-btn" title="{% translate 'Run the selected action' %}" name="index" value="{{ action_index|default:0 }}">{% translate "Apply" %}</button>
+    {% endblock %}
+  </div>
+
+  {% block actions-counter %}
+    {% if actions_selection_counter %}
+      {% if cl.result_count != cl.result_list|length %}
+        <div class="rk-actions-all-container">
+          <span class="all hidden">{{ selection_note_all }}</span>
+          <span class="question hidden">
+            <a role="button" href="#">Select all {{ cl.result_count }} {{ module_name }}</a>
+          </span>
+          <span class="clear hidden"><a role="button" href="#">Clear selection</a></span>
+        </div>
+      {% endif %}
+    {% endif %}
+  {% endblock %}
+</div>
+
+<script>
+(function() {
+  var delBtn = document.getElementById('rk-bulk-delete-trigger');
+  if (!delBtn) return;
+  delBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    var form = document.getElementById('changelist-form');
+    if (!form) return;
+    var checked = form.querySelectorAll('input[name="_selected_action"]:checked');
+    if (checked.length === 0) {
+      alert('⚠️ No items selected. Please select at least one row using the checkboxes on the left.');
+      return;
+    }
+    // Set action to delete_selected
+    var select = form.querySelector('select[name="action"]');
+    if (select) {
+      select.value = 'delete_selected';
+    }
+    form.submit();
+  });
+})();
+</script>

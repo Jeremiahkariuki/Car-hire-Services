@@ -1,0 +1,28 @@
+{% load i18n static %}
+{% if cl.search_fields %}
+<div id="toolbar" class="rk-search-toolbar">
+  <form id="changelist-search" method="get" role="search" class="rk-search-box-form">
+    <div class="rk-search-inner">
+      <span class="rk-search-mag">🔍</span>
+      <input type="text" size="40" name="{{ search_var }}" value="{{ cl.query }}"
+             id="searchbar" placeholder="Search by brand, model, license plate..."
+             {% if cl.search_help_text %} aria-describedby="searchbar_helptext"{% endif %}>
+      <button type="submit" class="rk-search-btn">Search</button>
+      {% if cl.query %}
+        <a href="?" class="rk-search-reset-btn" title="Reset search">✕ Clear</a>
+      {% endif %}
+    </div>
+    {% if show_result_count %}
+      <div class="rk-search-stats">
+        <span class="rk-search-stat-count">{{ cl.result_count }} found</span>
+        {% if cl.show_full_result_count %}
+          <a href="?{% if cl.is_popup %}{{ is_popup_var }}=1&{% endif %}" class="rk-search-showall">Show all ({{ cl.full_result_count }})</a>
+        {% endif %}
+      </div>
+    {% endif %}
+    {% for pair in cl.params.items %}
+      {% if pair.0 != search_var %}<input type="hidden" name="{{ pair.0 }}" value="{{ pair.1 }}">{% endif %}
+    {% endfor %}
+  </form>
+</div>
+{% endif %}
