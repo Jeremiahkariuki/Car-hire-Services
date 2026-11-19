@@ -1,8 +1,20 @@
+from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import Category, Location, Car, Booking, CustomerProfile, VehicleInspection, MaintenanceRecord
+from .widgets import DragDropImageWidget
+
+
+class CarAdminForm(forms.ModelForm):
+    """Car admin form wired with drag-and-drop image upload widget."""
+    class Meta:
+        model = Car
+        fields = '__all__'
+        widgets = {
+            'image': DragDropImageWidget(),
+        }
 
 admin.site.site_header = "RideKari Car Hire Admin"
 admin.site.site_title = "RideKari Portal"
@@ -60,6 +72,7 @@ class LocationAdmin(admin.ModelAdmin):
 
 @admin.register(Car)
 class CarAdmin(admin.ModelAdmin):
+    form = CarAdminForm
     list_display = (
         'thumbnail',
         'display_name',
@@ -102,9 +115,8 @@ class CarAdmin(admin.ModelAdmin):
             )
         }),
         ('🖼️ Vehicle Images', {
-            'description': 'Upload a photo directly or paste a web image URL. Upload takes priority.',
+            'description': 'Drag & drop a photo, click to browse, or paste (Ctrl+V). Then optionally paste a web image URL.',
             'fields': (
-                'image_preview',
                 'image',
                 'image_url',
             )

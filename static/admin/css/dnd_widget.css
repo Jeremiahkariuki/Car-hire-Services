@@ -1,0 +1,185 @@
+/* ========================================================
+   RideKari — Drag & Drop Image Widget Styles
+   ======================================================== */
+
+.rk-dnd-wrapper {
+  margin: 4px 0 12px;
+}
+
+/* ── Current image (edit mode) ──────────────────────── */
+.rk-dnd-current {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #0d1a2d;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+}
+.rk-dnd-current-img {
+  width: 100px;
+  height: 68px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.12);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  flex-shrink: 0;
+}
+.rk-dnd-current-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  flex: 1;
+}
+.rk-dnd-clear {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #f87171;
+  cursor: pointer;
+  font-weight: 600;
+  opacity: 0.75;
+  transition: opacity 0.15s;
+}
+.rk-dnd-clear:hover { opacity: 1; }
+.rk-dnd-clear input[type=checkbox] { accent-color: #ef4444; }
+
+/* ── Drop Zone ──────────────────────────────────────── */
+.rk-dnd-zone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 160px;
+  padding: 32px 24px;
+  background: #0d1a2d;
+  border: 2px dashed rgba(59, 130, 246, 0.35);
+  border-radius: 18px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  text-align: center;
+  overflow: hidden;
+}
+.rk-dnd-zone:hover,
+.rk-dnd-zone.rk-drag-over {
+  border-color: #3b82f6;
+  background: rgba(37, 99, 235, 0.08);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+  transform: scale(1.005);
+}
+.rk-dnd-zone.rk-drag-over {
+  border-style: solid;
+  background: rgba(37, 99, 235, 0.14);
+}
+
+/* Hidden real input, stretches to cover zone */
+.rk-dnd-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  font-size: 0;
+}
+
+.rk-dnd-icon {
+  font-size: 36px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 8px rgba(59,130,246,0.3));
+  pointer-events: none;
+}
+.rk-dnd-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #e2e8f0;
+  pointer-events: none;
+}
+.rk-dnd-sub {
+  font-size: 12px;
+  color: #64748b;
+  pointer-events: none;
+}
+.rk-dnd-formats {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #334155;
+  text-transform: uppercase;
+  margin-top: 4px;
+  pointer-events: none;
+}
+
+/* ── Preview panel ──────────────────────────────────── */
+.rk-dnd-preview-wrap {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: #0d1a2d;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-top: 14px;
+  animation: rkFadeIn 0.25s ease;
+}
+@keyframes rkFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.rk-dnd-preview-img {
+  width: 110px;
+  height: 76px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid rgba(59, 130, 246, 0.35);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  flex-shrink: 0;
+}
+.rk-dnd-preview-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+.rk-dnd-preview-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e2e8f0;
+  word-break: break-all;
+}
+.rk-dnd-preview-size {
+  font-size: 11px;
+  color: #64748b;
+}
+.rk-dnd-remove-btn {
+  align-self: flex-start;
+  background: rgba(239, 68, 68, 0.14);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.rk-dnd-remove-btn:hover {
+  background: #ef4444;
+  color: #fff;
+  border-color: #ef4444;
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .rk-dnd-zone { min-height: 130px; padding: 24px 16px; }
+  .rk-dnd-title { font-size: 13px; }
+  .rk-dnd-current, .rk-dnd-preview-wrap { flex-direction: column; align-items: flex-start; }
+  .rk-dnd-current-img, .rk-dnd-preview-img { width: 100%; height: 160px; }
+}
