@@ -131,3 +131,8 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'customer_dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 
+# Upload limits (support high-resolution vehicle photos up to 50 MB)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50 MB
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000
+

@@ -11,6 +11,31 @@
     return (bytes / 1048576).toFixed(1) + ' MB';
   }
 
+  function compressImageToB64(srcUrl, callback) {
+    var img = new Image();
+    img.onload = function () {
+      var maxDim = 1600;
+      var w = img.width;
+      var h = img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) {
+          h = Math.round((h * maxDim) / w);
+          w = maxDim;
+        } else {
+          w = Math.round((w * maxDim) / h);
+          h = maxDim;
+        }
+      }
+      var canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.src = srcUrl;
+  }
+
   function showPreview(widgetId, file) {
     if (!file || !file.type.startsWith('image/')) return;
     var reader = new FileReader();
@@ -20,10 +45,19 @@
       var previewName = document.getElementById('rk-dnd-pname-'   + widgetId);
       var previewSize = document.getElementById('rk-dnd-psize-'   + widgetId);
       var zone        = document.getElementById('rk-dnd-zone-'    + widgetId);
+      var input       = document.getElementById(widgetId);
       var b64Input    = document.getElementById(widgetId + '_b64');
-      if (b64Input) {
-        b64Input.value = e.target.result;
+
+      // If input already holds the file natively, no need for huge base64 payload
+      if (input && input.files && input.files.length > 0) {
+        if (b64Input) b64Input.value = '';
+      } else if (b64Input) {
+        // Fallback: compress to lightweight base64 so body never exceeds size limits
+        compressImageToB64(e.target.result, function (compressedB64) {
+          b64Input.value = compressedB64;
+        });
       }
+
       if (!previewWrap) return;
       previewImg.src       = e.target.result;
       previewName.textContent = file.name;
