@@ -569,3 +569,286 @@ input[type=text]:focus, select:focus, textarea:focus {
     max-height: 280px;
     object-fit: cover;
 }
+
+/* ========================================================
+   Checkbox & Radio Inputs
+   ======================================================== */
+input[type=checkbox], input[type=radio] {
+    accent-color: #2563eb !important;
+}
+
+/* ========================================================
+   File Inputs
+   ======================================================== */
+input[type=file] {
+    color: #94a3b8 !important;
+    font-size: 12px !important;
+    padding: 8px 0 !important;
+}
+
+/* ========================================================
+   Related FK Widget Buttons (pencil / eye / +)
+   ======================================================== */
+.related-widget-wrapper a {
+    color: #60a5fa !important;
+    text-decoration: none !important;
+    opacity: 0.75 !important;
+    transition: opacity 0.15s !important;
+}
+.related-widget-wrapper a:hover { opacity: 1 !important; }
+
+/* ========================================================
+   Error / Success / Warning Banners
+   ======================================================== */
+.errornote {
+    background: rgba(239, 68, 68, 0.12) !important;
+    border: 1px solid rgba(239, 68, 68, 0.35) !important;
+    border-radius: 12px !important;
+    color: #f87171 !important;
+    padding: 14px 18px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    margin-bottom: 20px !important;
+}
+.messagelist { list-style: none !important; padding: 0 !important; margin: 0 0 20px !important; }
+.messagelist li {
+    border-radius: 10px !important;
+    padding: 12px 18px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    margin-bottom: 8px !important;
+}
+.messagelist .success {
+    background: rgba(16, 185, 129, 0.12) !important;
+    border: 1px solid rgba(16, 185, 129, 0.3) !important;
+    color: #34d399 !important;
+}
+.messagelist .warning {
+    background: rgba(245, 158, 11, 0.12) !important;
+    border: 1px solid rgba(245, 158, 11, 0.3) !important;
+    color: #fbbf24 !important;
+}
+.messagelist .error {
+    background: rgba(239, 68, 68, 0.12) !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    color: #f87171 !important;
+}
+
+/* ========================================================
+   Pagination
+   ======================================================== */
+.paginator {
+    color: #94a3b8 !important;
+    font-size: 12px !important;
+    padding: 16px 0 !important;
+}
+.paginator a {
+    color: #60a5fa !important;
+    text-decoration: none !important;
+    padding: 4px 10px !important;
+    border-radius: 6px !important;
+    border: 1px solid rgba(96, 165, 250, 0.25) !important;
+    margin: 0 2px !important;
+}
+.paginator .this-page {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    padding: 4px 10px !important;
+    border-radius: 6px !important;
+    font-weight: 700 !important;
+}
+
+/* ========================================================
+   Date / Time Shortcuts
+   ======================================================== */
+.datetimeshortcuts a {
+    color: #60a5fa !important;
+    font-size: 11px !important;
+    text-decoration: none !important;
+}
+.calendarbox, .clockbox {
+    background: #1e293b !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 12px !important;
+    color: #f8fafc !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ========================================================
+   Inline Admin Tables
+   ======================================================== */
+.inline-group {
+    margin-bottom: 24px !important;
+}
+.inline-group .tabular.inline-related {
+    background: #162032 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+}
+.inline-group h2 {
+    background: #0f172a !important;
+    color: #ffffff !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    padding: 14px 18px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    margin: 0 !important;
+}
+.inline-group .tabular td, .inline-group .tabular th {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    padding: 10px 12px !important;
+    color: #cbd5e1 !important;
+    font-size: 12px !important;
+    vertical-align: middle !important;
+}
+.inline-group .tabular thead th {
+    background: #0d1322 !important;
+    color: #64748b !important;
+    font-size: 10px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    font-weight: 700 !important;
+}
+.add-row a { color: #60a5fa !important; font-size: 12px !important; font-weight: 700 !important; }
+.inline-deletelink { color: #f87171 !important; }
+
+/* ========================================================
+   Select2 / Autocomplete
+   ======================================================== */
+.select2-container--admin-autocomplete .select2-selection {
+    background: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    border-radius: 10px !important;
+}
+.select2-container--admin-autocomplete .select2-selection__rendered { color: #ffffff !important; }
+.select2-dropdown {
+    background: #1e293b !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+.select2-results__option { color: #cbd5e1 !important; }
+.select2-results__option--highlighted { background: #2563eb !important; color: #fff !important; }
+
+/* ========================================================
+   Mobile Responsive Sidebar
+   ======================================================== */
+
+/* Overlay backdrop for mobile */
+.rk-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 998;
+    backdrop-filter: blur(2px);
+}
+.rk-sidebar-overlay.active { display: block; }
+
+@media (max-width: 1024px) {
+    /* Main layout: stack sidebar on top of content */
+    #main {
+        display: block !important;
+    }
+
+    /* Sidebar: fixed overlay panel, hidden off-screen */
+    #nav-sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: -280px !important;
+        height: 100vh !important;
+        width: 260px !important;
+        min-width: 260px !important;
+        z-index: 999 !important;
+        transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        overflow-y: auto !important;
+        padding-top: 24px !important;
+    }
+
+    /* Sidebar open state */
+    #nav-sidebar.rk-open {
+        left: 0 !important;
+    }
+
+    /* Toggle button repositioned for mobile */
+    #toggle-nav-sidebar {
+        position: fixed !important;
+        top: 14px !important;
+        left: 14px !important;
+        z-index: 1000 !important;
+        width: 38px !important;
+        height: 38px !important;
+        border-radius: 10px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 18px !important;
+    }
+
+    /* Push header right to not overlap toggle */
+    #header {
+        padding-left: 64px !important;
+    }
+
+    /* Content takes full width */
+    #content-related { display: none; }
+    #content { padding: 16px !important; }
+
+    /* Fieldsets stack nicely */
+    .form-row {
+        flex-direction: column !important;
+    }
+    .field-box {
+        float: none !important;
+        width: 100% !important;
+    }
+    input[type=text], input[type=password], input[type=email], input[type=url],
+    input[type=number], input[type=date], select, textarea {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Header wrap on very small screens */
+    #header {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        padding: 10px 14px 10px 60px !important;
+    }
+    #user-tools {
+        font-size: 10px !important;
+        gap: 10px !important;
+    }
+    div.breadcrumbs {
+        font-size: 11px !important;
+        padding: 10px 16px !important;
+    }
+    #content h1 {
+        font-size: 18px !important;
+    }
+    fieldset {
+        padding: 16px !important;
+        border-radius: 12px !important;
+    }
+    .submit-row {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    .submit-row input[type=submit] {
+        width: 100% !important;
+    }
+    /* Result table: horizontal scroll */
+    #changelist-form {
+        overflow-x: auto !important;
+    }
+    #result_list {
+        min-width: 600px !important;
+    }
+}
+
+/* Mobile sidebar JS enhancements */
+/* (injected via base_site.html script block) */

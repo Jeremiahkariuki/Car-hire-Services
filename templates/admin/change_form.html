@@ -1,0 +1,149 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}">
+<style>
+  /* Inline fieldset collapse toggles */
+  .inline-group .tabular.inline-related {
+    background: #162032 !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    margin-bottom: 20px !important;
+  }
+  .inline-group h2 {
+    background: #0f172a !important;
+    color: #ffffff !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    padding: 14px 18px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+    margin: 0 !important;
+  }
+  .inline-group .tabular td, .inline-group .tabular th {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+    padding: 10px 12px !important;
+    color: #cbd5e1 !important;
+    font-size: 12px !important;
+    vertical-align: middle !important;
+  }
+  .inline-group .tabular thead th {
+    background: #0d1322 !important;
+    color: #64748b !important;
+    font-size: 10px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    font-weight: 700 !important;
+  }
+  .add-row a, .inline-deletelink {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+  }
+  .add-row a {
+    color: #60a5fa !important;
+  }
+  .inline-deletelink {
+    color: #f87171 !important;
+  }
+  /* File input styling */
+  input[type=file] {
+    color: #94a3b8 !important;
+    font-size: 12px !important;
+  }
+  /* Checkbox / radio */
+  input[type=checkbox], input[type=radio] {
+    accent-color: #2563eb !important;
+    width: 15px !important;
+    height: 15px !important;
+  }
+  /* Related-object FK buttons */
+  .related-widget-wrapper a {
+    color: #60a5fa !important;
+    padding: 2px 4px !important;
+    font-size: 14px !important;
+    text-decoration: none !important;
+    opacity: 0.8 !important;
+    transition: opacity 0.15s !important;
+  }
+  .related-widget-wrapper a:hover { opacity: 1 !important; }
+  /* Date/time pickers */
+  .datetimeshortcuts a {
+    color: #60a5fa !important;
+    font-size: 11px !important;
+    text-decoration: none !important;
+  }
+  .timezonewarning { color: #f59e0b !important; font-size: 11px !important; }
+  /* Error list */
+  .errorlist { list-style: none !important; padding: 0 !important; margin: 6px 0 !important; }
+  .errorlist li {
+    background: rgba(239, 68, 68, 0.12) !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    color: #f87171 !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+  }
+  /* Success/warning messages */
+  .messagelist { list-style: none !important; padding: 0 !important; margin: 0 0 20px !important; }
+  .messagelist .success {
+    background: rgba(16, 185, 129, 0.12) !important;
+    border: 1px solid rgba(16, 185, 129, 0.3) !important;
+    color: #34d399 !important;
+    border-radius: 10px !important;
+    padding: 12px 18px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+  }
+  .messagelist .warning {
+    background: rgba(245, 158, 11, 0.12) !important;
+    border: 1px solid rgba(245, 158, 11, 0.3) !important;
+    color: #fbbf24 !important;
+    border-radius: 10px !important;
+    padding: 12px 18px !important;
+  }
+  .messagelist .error {
+    background: rgba(239, 68, 68, 0.12) !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    color: #f87171 !important;
+    border-radius: 10px !important;
+    padding: 12px 18px !important;
+  }
+  /* Pagination */
+  .paginator { color: #94a3b8 !important; font-size: 12px !important; }
+  .paginator a { color: #60a5fa !important; text-decoration: none !important; padding: 4px 8px !important; }
+  .paginator .this-page {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    padding: 4px 10px !important;
+    border-radius: 6px !important;
+  }
+  /* Calendar / clock popup */
+  .calendarbox, .clockbox {
+    background: #1e293b !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 12px !important;
+    color: #f8fafc !important;
+  }
+  .calendar td a:hover, .timelist a:hover {
+    background: #2563eb !important;
+    border-radius: 4px !important;
+  }
+  /* Select2 / autocomplete dropdowns */
+  .select2-container--admin-autocomplete .select2-selection,
+  .select2-dropdown {
+    background: #0f172a !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    color: #ffffff !important;
+    border-radius: 10px !important;
+  }
+  .select2-container--admin-autocomplete .select2-selection__rendered { color: #ffffff !important; }
+  .select2-results__option { color: #cbd5e1 !important; }
+  .select2-results__option--highlighted { background: #2563eb !important; color: #fff !important; }
+</style>
+{% endblock %}

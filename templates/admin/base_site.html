@@ -30,3 +30,66 @@
 </a>
 {{ block.super }}
 {% endblock %}
+
+{% block footer %}
+{{ block.super }}
+<!-- Mobile sidebar overlay -->
+<div class="rk-sidebar-overlay" id="rk-overlay"></div>
+<script>
+(function() {
+  'use strict';
+  function isMobile() { return window.innerWidth <= 1024; }
+
+  var overlay = document.getElementById('rk-overlay');
+  var sidebar = document.getElementById('nav-sidebar');
+  var toggleBtn = document.getElementById('toggle-nav-sidebar');
+
+  if (!sidebar || !toggleBtn) return;
+
+  function openSidebar() {
+    sidebar.classList.add('rk-open');
+    overlay.classList.add('active');
+    toggleBtn.setAttribute('aria-expanded', 'true');
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('rk-open');
+    overlay.classList.remove('active');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  // On mobile, intercept Django's toggle and use ours instead
+  if (isMobile()) {
+    // Remove Django's default toggle listener by cloning
+    var newBtn = toggleBtn.cloneNode(true);
+    toggleBtn.parentNode.replaceChild(newBtn, toggleBtn);
+    toggleBtn = newBtn;
+
+    toggleBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (sidebar.classList.contains('rk-open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+
+    overlay.addEventListener('click', closeSidebar);
+
+    // Close sidebar on nav link click (SPA-like feel)
+    sidebar.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', function() {
+        if (isMobile()) closeSidebar();
+      });
+    });
+  }
+
+  // Handle resize
+  window.addEventListener('resize', function() {
+    if (!isMobile()) {
+      closeSidebar();
+      sidebar.style.left = '';
+    }
+  });
+})();
+</script>
+{% endblock %}
